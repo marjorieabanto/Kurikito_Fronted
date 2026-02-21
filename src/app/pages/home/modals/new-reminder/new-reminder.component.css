@@ -12,7 +12,7 @@ p-datepicker {
   }
 }
 
-::ng-deep input#peso.p-inputtext.p-component.p-inputnumber-input {
+::ng-deep input#peso.p-inputnumber-horizontal .p-inputnumber-input {
   height: 48px;
   text-align: center ;
 }
