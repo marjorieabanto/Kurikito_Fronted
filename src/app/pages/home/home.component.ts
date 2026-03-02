@@ -22,176 +22,44 @@ import {Reminder} from "../../models/reminder.model";
   providers: [ DialogService],
 
 })
-export class HomeComponent implements OnInit {
-  searchText: string = '';
-  dateRange: Date[] | undefined;
-  stateSelected: any;
-  reminders: Reminder[] = [];
-  filteredReminders: Reminder[] = [];
-  loading: boolean = false;
+export class HomeComponent  {
 
-  states = [
-    { label: 'Activo', value: '1' },
-    { label: 'Inactivo', value: '0' },
-  ];
 
-  actions = [
+  firstStep:boolean=true;
 
-  ];
-  
-  columns = [
-    { field: 'id', header: 'ID' },
-    { field: 'reminderName', header: 'Nombre' },
-    { field: 'description', header: 'Descripción' },
-    { field: 'scheduledDate', header: 'Fecha programada' },
-    {
-      field: 'status',
-      header: 'Estado',
-      type: 'tag',
-      colorMap: { 
-        'PENDING': 'orange', 
-        'PROCESSING': 'blue', 
-        'COMPLETED': 'green', 
-        'FAILED': 'red' 
-      },
-    },
-  ];
+  selectedMenu = '';
 
-  data: any[] = [];
-  ref: DynamicDialogRef | undefined;
+  tiles: any[] = [
+    { id:1,icon: 'groups_2', line2: 'Mis clientes', route: '/home/app',status: true },
+    { id:2,icon: 'sell',    line2: 'Mis ventas', route: '/main/operation/list-clients' ,status: true},
+    {  id:3,icon: 'trolley',line1: 'Mis compras'
+      ,brand: true, route: '/home/app' ,status: true},
+    { id:4,icon: 'inventory',             line1: 'Mi inventario', route: '/home/app',status: true},
+    { id:5,icon: 'list_alt_check',           line1: 'Reportes', route: '/home/app' ,status: true},
+    ];
 
   constructor(
-    private router: Router, 
-    private authService: AuthService,
-    public dialogService: DialogService,
-    private route: ActivatedRoute,
-    private reminderService: ReminderService
+
+    private router: Router,
+
   ) {
-    console.log(this.authService.getUser())
   }
 
-  ngOnInit(): void {
-    this.loadReminders();
-  }
+  onClick(item:any){
+    this.selectedMenu = item.id;
+    if(item.id!=8) {
+      const segments = (item.status==false)
+        ? [item.route, 'modal']
+        : [item.route];
 
-  loadReminders(): void {
-    this.loading = true;
-    this.reminderService.getAllReminders().subscribe({
-      next: (reminders) => {
-        this.reminders = reminders;
-        this.filteredReminders = reminders;
-        this.updateDataTable();
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading reminders:', error);
-        this.loading = false;
-      }
-    });
-  }
 
-  updateDataTable(): void {
-    this.data = this.filteredReminders.map(reminder => ({
-      id: reminder.id,
-      reminderName: reminder.reminderName,
-      description: reminder.description,
-      scheduledDate: this.formatDate(reminder.scheduledDate),
-      status: reminder.status,
-      relativeDays: reminder.relativeDays,
-      debtorFilter: reminder.debtorFilter
-    }));
-  }
-
-  onDateRangeChange(): void {
-    this.filterRemindersByDate();
-  }
-
-  onDateRangeClear(): void {
-    this.dateRange = undefined;
-    this.filteredReminders = [...this.reminders];
-    this.updateDataTable();
-  }
-
-  private filterRemindersByDate(): void {
-    if (!this.dateRange || this.dateRange.length === 0) {
-      this.filteredReminders = [...this.reminders];
-    } else {
-      const startDate = this.dateRange[0];
-      const endDate = this.dateRange[1] || this.dateRange[0];
-      
-      this.filteredReminders = this.reminders.filter(reminder => {
-        const reminderDate = new Date(reminder.scheduledDate);
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        
-        start.setHours(0, 0, 0, 0);
-        end.setHours(23, 59, 59, 999);
-        reminderDate.setHours(12, 0, 0, 0);
-        
-        return reminderDate >= start && reminderDate <= end;
-      });
+      this.router.navigate(segments);
     }
-    
-    this.updateDataTable();
+    this.firstStep=false;
+
+
   }
 
 
-  private formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES');
-  }
 
-  private onBalance(row: any) {
-    // const ref = this.dialogService.open(AssociateWeightComponent, {
-    //
-    //   modal: true,
-    //   dismissableMask: false,
-    // });
-    // ref.onClose.subscribe(result => {
-    //   if (result) {
-    //     console.log(result);
-    //
-    //   } else {
-    //     console.log('modal cerrado');
-    //   }
-    // });
-
-  }
-
-  private onView(row: any) {
-
-    // const ref = this.dialogService.open(InfoBalanceComponent, {
-    //
-    //   width:'700px',
-    //   modal: true,
-    //   dismissableMask: false,
-    // });
-    // ref.onClose.subscribe(result => {
-    //   if (result) {
-    //     console.log(result);
-    //
-    //   } else {
-    //     console.log('modal cerrado');
-    //   }
-    // });
-
-  }
-
-  create() {
-    const ref = this.dialogService.open(NewReminderComponent, {
-      width: '500px',
-      height: 'auto',
-      modal: true,
-      dismissableMask: true,
-      styleClass: 'responsive-dialog'
-    });
-    ref.onClose.subscribe(result => {
-      if (result) {
-        console.log('Recordatorio creado:', result);
-        this.loadReminders(); // Recargar la lista después de crear un recordatorio
-      } else {
-        console.log('modal cerrado');
-      }
-    });
-  }
 }

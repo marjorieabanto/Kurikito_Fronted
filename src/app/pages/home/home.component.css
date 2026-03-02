@@ -1,33 +1,58 @@
-p-date-picker{
-  display: flex;
-  padding: 10px;
-  width: 300px !important;
+.apps-grid{
+  display: grid;
+  gap: 60px;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: stretch;
+}
 
-  & span {
-    & input {
+@media (max-width: 900px){
+  .apps-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px){
+  .apps-grid{ grid-template-columns: 1fr; }
+}
 
-      width: 300px;
-      margin-right: 10px;
-      font-size: 14px;
-    }
+.app-tile{
+
+  border-radius: 10px;
+  height: 250px;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  padding: 20px;
+  gap: 40px;
+
+}
+
+i{
+
+  width: 100%;
+  font-size: 60px;
+
+
+}
+
+.app-tile.isBtnPageActive, {
+
+  background: var(--color-primary);
+  border-radius: 10px;
+
+
+  div {
+
+    background: var(--color-primary);
+    color: var(--color-white);
+    border-radius: 10px;
+
   }
-  & calendaricon {
-
-    color: #00B94C;
-    margin-right: 10px;
-  }
 }
 
-.p-date-picker-input-icon-container{
+.app-tile:hover{
 
-  color: #00B94C;
-  margin-right: 10px;
+  background: var(--color-primary);
+  color: var(--color-white);
+
+
+
 }
 
-.search{
-
-  width: 400px;
-  background-color: #F9F9F9;
-  padding-left: 20px;
-}
 

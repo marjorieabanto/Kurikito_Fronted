@@ -1,27 +1,49 @@
-<div class="bogenetables">
-  <div class="">
-    <div class="uflex uflex-jbtw mb20 ststylecont">
-      <h2 class="headingst">Mis recordatorios</h2>
+<div class="uflex-v w100 h100 gap20 p-lg">
 
-      <div class="uflex-v gap25 aiend uflex-jend">
-      <button class="uflex-center gap5 btn-primary mrequal"
-              type="button" pButton pRipple (click)="create()" ><i class="material-symbols-outlined">add_diamond</i>Nuevo</button>
+  <div class="header">
 
-      <div class="uflex gap10 aicenter" >
-        <label for="daterange">Fecha registro</label>
-        <p-date-picker [(ngModel)]="dateRange" selectionMode="range" inputId="daterange" dateFormat="dd/mm/yy"
-                       placeholder="Elige fecha inicio y fecha fin" showIcon="true" 
-                       (onSelect)="onDateRangeChange()" (onClearClick)="onDateRangeClear()"></p-date-picker>
-
-      </div>
-      </div>
-    </div>
+    <h1 class="heading-st2" > {{(this.firstStep)?  'Parrilla de aplicaciones':'Logistica' }}</h1>
 
   </div>
 
-  <div>
-    <app-table [columns]="columns" [data]="data" [actions]="actions"
+
+  <div class="apps-grid" >
+    @for(t of tiles; track t.line2){
+
+    @if(t.status==this.firstStep){
+    <div
+
+      class="app-tile uflex-center uflex-v gap10"
+      [ngClass]="{'isBtnPageActive': selectedMenu === t.id}"
+      [class.is-brand]="t.brand"
+      (click)="onClick(t)"
+
     >
-    </app-table>
+
+
+      @if(t.icon){
+      <div class="w100 txt-center ">
+
+
+        <i class="material-symbols-outlined ">{{ t.icon }}</i>
+
+
+      </div>
+      }
+
+      <div class="tile-text">
+        @if (t.line1){
+        <div [ngStyle]="t.stline1"> {{ t.line1 }} </div>
+        }
+
+        <div class="line2" [ngStyle]= " (t.line1)? t.stline2: '' " >{{ t.line2 }}</div>
+
+      </div>
+
+
+    </div>
+    }
+    }
+
   </div>
 </div>

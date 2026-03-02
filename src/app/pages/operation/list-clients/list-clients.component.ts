@@ -47,19 +47,20 @@ export class ListClientsComponent implements OnInit {
   status: boolean = true;
 
   actions = [
-    { icon: 'edit_square', action: (row: any) => this.onEdit(row) },
-    { icon: 'delete_forever', action: (row: any) => this.onDelete(row) },
+    { icon: 'eye_tracking', action: (row: any) => this.onEdit(row) },
+    { icon: 'edit_square', action: (row: any) => this.onDelete(row) },
   ];
 
   columns = [
     { field: 'id', header: 'Id' },
-    { field: 'userFirstName', header: 'Nombre' },
-    { field: 'userLastName', header: 'Apellido' },
-    { field: 'created', header: 'Fecha de registro' },
-    { field: 'userEmail', header: 'Correo' },
-    { field: 'formattedPhone', header: 'Número' },
+    { field: 'fecha', header: 'Fecha de registro' },
+    { field: 'cliente', header: 'Nombre' },
+    { field: 'productoId', header: 'Producto' },
+
+    { field: 'cantidad', header: 'cantidad' },
+    { field: 'precioVentaUnit', header: 'P. Venta' },
     {
-      field: 'active',
+      field: 'estado',
       header: 'Estado',
       type: 'tag',
       colorMap: { Activo: 'green', Inactivo: 'red', Pendiente: 'orange' },
@@ -78,7 +79,7 @@ export class ListClientsComponent implements OnInit {
   ];
 
   serviceSelected: any = null;
-  
+
 
   constructor(
     private router: Router,
@@ -97,21 +98,17 @@ export class ListClientsComponent implements OnInit {
     this.isLoading = true;
     this.clientService.getAllClients().subscribe({
       next: (response) => {
-        // La respuesta de la API tiene el formato: { clients: Client[], totalClients: number, timestamp: string, message: string }
-        if (response && response.clients) {
-          this.allClients = response.clients;
-        } else if (Array.isArray(response)) {
-          // Fallback si la respuesta es directamente un array
-          this.allClients = response;
-        } else {
-          this.allClients = [];
-        }
-        
-        console.log('Clientes cargados:', this.allClients.length, this.allClients);
-        
+
+        console.log("respuesta:"+ response);
+
+          this.data = response.data;
+
+        console.log(this.data)
+        console.log('ventas cargados:', this.data.length, this.data);
+
         // Aplicar filtros iniciales (por defecto solo activos)
-        this.executeFilters();
-        
+       //this.executeFilters();
+
         this.isLoading = false;
       },
       error: (error) => {
@@ -127,14 +124,14 @@ export class ListClientsComponent implements OnInit {
 
   formatPhoneForDisplay(phone: string): string {
     if (!phone) return phone;
-    
+
     // Parsear el número desde la base de datos
     const phoneData = this.countryCodeService.parsePhoneFromDatabase(phone);
-    
+
     if (phoneData.country && phoneData.phoneNumber) {
       return this.countryCodeService.formatForDisplay(phoneData.phoneNumber, phoneData.country);
     }
-    
+
     return phone; // Fallback al número original si no se puede parsear
   }
 
@@ -153,7 +150,7 @@ export class ListClientsComponent implements OnInit {
   executeFilters() {
     this.isLoading = true;
     let filtered = [...this.allClients];
-    
+
     // Debug inicial: mostrar todos los clientes y sus fechas
     console.log('=== DEBUG CLIENTES ===');
     console.log('Total clientes:', this.allClients.length);
@@ -175,7 +172,7 @@ export class ListClientsComponent implements OnInit {
       filtered = filtered.filter(item => {
         const firstName = (item.userFirstName || '').toLowerCase();
         const lastName = (item.userLastName || '').toLowerCase();
-        
+
         return firstName.includes(search) || lastName.includes(search);
       });
     }
@@ -189,22 +186,22 @@ export class ListClientsComponent implements OnInit {
     if (this.dateRange && this.dateRange.length >= 1 && this.dateRange[0]) {
       const start = this.dateRange[0];
       const end = this.dateRange[1] || start;
-      
+
       // Convertir las fechas del filtro a string en formato local (como se ve en frontend)
       const startDateString = start.toLocaleDateString('es-ES');
       const endDateString = end.toLocaleDateString('es-ES');
-      
+
       console.log('Filtro por fecha visual:', {
         inicioFiltro: startDateString,
         finFiltro: endDateString
       });
-      
+
       filtered = filtered.filter(item => {
         if (!item.created) return false;
-        
+
         // Convertir la fecha del cliente evitando problemas de zona horaria
         let clientDateString: string;
-        
+
         if (item.created.includes('-')) {
           // Si viene en formato YYYY-MM-DD, parsearlo directamente
           const [year, month, day] = item.created.split('-');
@@ -215,16 +212,16 @@ export class ListClientsComponent implements OnInit {
           if (isNaN(createdDate.getTime())) return false;
           clientDateString = createdDate.toLocaleDateString('es-ES');
         }
-        
+
         // Comparar las fechas como strings (como se ven visualmente)
         const cumpleFiltro = this.isDateInRange(clientDateString, startDateString, endDateString);
-        
+
         console.log('Cliente:', item.userFirstName, {
           fechaOriginal: item.created,
           fechaVisual: clientDateString,
           cumpleFiltro: cumpleFiltro
         });
-        
+
         return cumpleFiltro;
       });
     }
@@ -254,7 +251,7 @@ export class ListClientsComponent implements OnInit {
     if (this.dateRange && this.dateRange.length >= 1 && this.dateRange[0]) {
       const start = this.dateRange[0];
       const end = this.dateRange[1] || start;
-      
+
       console.log('Filtro de fecha:', {
         fechaInicio: start,
         fechaFin: end,
@@ -383,26 +380,26 @@ export class ListClientsComponent implements OnInit {
       inicio: startDateString,
       fin: endDateString
     });
-    
+
     // Convertir strings de fecha "dd/mm/yyyy" a objetos Date para comparación
     const parseSpanishDate = (dateStr: string): Date => {
       const [day, month, year] = dateStr.split('/').map(Number);
       return new Date(year, month - 1, day); // month - 1 porque Date usa meses base 0
     };
-    
+
     const clientDate = parseSpanishDate(clientDateString);
     const startDate = parseSpanishDate(startDateString);
     const endDate = parseSpanishDate(endDateString);
-    
+
     const result = clientDate >= startDate && clientDate <= endDate;
-    
+
     console.log('Comparación de fechas:', {
       clienteParsed: clientDate,
       inicioParsed: startDate,
       finParsed: endDate,
       resultado: result
     });
-    
+
     return result;
   }
 

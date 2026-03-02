@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class ClientService {
-  private apiUrl = `${environment.apiUrl}/api/clients`;
+  private apiUrl = `${environment.apiUrl}`;
   constructor(private http: HttpClient) {}
 
   getAuthHeaders(): HttpHeaders {
@@ -21,7 +21,7 @@ export class ClientService {
 
   getAllClients(): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any>(this.apiUrl, { headers })
+    return this.http.get<any>(`${this.apiUrl}?action=listVentas`)
       .pipe(catchError(this.handleError));
   }
 
