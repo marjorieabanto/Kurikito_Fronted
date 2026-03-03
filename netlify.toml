@@ -1,13 +1,13 @@
 [build]
 command = "npm run build"
-publish = "dist"
+publish = "dist/paga-pe-fronted/browser"
+functions = "netlify/functions"
 
 [[redirects]]
 from = "/api"
 to = "/.netlify/functions/api"
 status = 200
 
-# Si tu Angular es SPA, agrega también:
 [[redirects]]
 from = "/*"
 to = "/index.html"
