@@ -2,21 +2,21 @@
   <p-toast position="top-right"></p-toast>
 
   <div class="">
-    <div class="uflex uflex-jbtw mb20 ststylecont">
+    <div class="uflex uflex-jbtw mb20 uflex-wrap ststylecont">
       <h2 class="headingst">Lista de Ventas</h2>
       <button class="uflex-center gap5 btn-primary mrequal"
               type="button" pButton pRipple (click)="create()"><i class="material-symbols-outlined">add_diamond</i>Nuevo</button>
     </div>
 
-    <article class="uflex-jbtw uflex cardElements mb25 p-3" [formGroup]="formGlobalFilter">
-      <div class="uflex gap20 " >
+    <article class="uflex-jbtw uflex uflex-wrap gap20 cardElements mb25 p-3" [formGroup]="formGlobalFilter">
+      <div class="uflex gap20 uflex-wrap " >
         <div class="input-icon brfield  ">
           <i class="material-symbols-outlined">search</i>
           <input class="w100 search" formControlName="searchText" type="text" pInputText
                  placeholder="Buscar por nombre o apellido" (input)="applyFiltersImmediate()"  />
         </div>
 
-        <div class="uflex gap10 aicenter" >
+        <div class="uflex gap10 uflex-wrap aicenter" >
           <label for="daterange">Fecha registro</label>
           <p-date-picker formControlName="dateRange" selectionMode="range" inputId="daterange" dateFormat="dd/mm/yy"
                          placeholder="Selecciona rango de fechas (puede ser el mismo día)" showIcon="true" (onSelect)="applyFiltersImmediate()"></p-date-picker>
@@ -24,7 +24,7 @@
 
 
 
-        <div class="uflex gap10 aicenter">
+        <div class="uflex gap10 uflex-wrap aicenter">
           <label for="bussiness" class="fw-bold">Estado: </label>
           <p-select
             [options]="states"

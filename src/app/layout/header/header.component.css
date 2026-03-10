@@ -67,3 +67,12 @@
     font-weight: 300;
   }
 }
+
+@media (max-width: 768px) {
+
+  .hb-brand{
+    & h1 {
+      font-size: 1.25rem ;
+    }
+  }
+}

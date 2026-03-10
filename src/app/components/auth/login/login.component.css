@@ -191,7 +191,7 @@ button {
 }
 
 
-/* Ajusta el slider del switch */
+
 .p-toggleswitch-slider {
   position: absolute;
   top: 0;
@@ -214,11 +214,11 @@ label{
 }
 
 .subtitle{
-  color: white; 
+  color: white;
   font-size: 16px;
 }
 
-/* Nuevos estilos para el botón de mostrar/ocultar contraseña */
+
 .password-wrapper {
   position: relative;
   width: 100%;
@@ -291,4 +291,27 @@ button[disabled] {
 }
 
 
+@media (max-width: 768px) {
+  .full-screen.flex-row {
+    flex-direction: column;
+  }
+
+  .login-container {
+    width: 100%;
+    padding: 20px;
+    max-width: none;
+    height: 100%;
+  }
+
+  .image-container {
+    width: 100%;
+    height: 200px;
+    display: none;
+  }
+
+  .image-container img.login {
+    height: 100%;
+    object-fit: cover;
+  }
+}
 
