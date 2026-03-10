@@ -1,0 +1,262 @@
+<div class="">
+  <div class=" uflex-jbtw uflex-wrap gap20 aicenter">
+    <h2 class="headingst">Información de venta {{ sellForm.get('ventaId')?.value }}</h2>
+    <div class="uflex gap20">
+      <button class="uflex-center gap5 btn-whitest mrequal" (click)="return()"><i
+        class="material-symbols-outlined">subdirectory_arrow_left</i>Volver</button>
+    </div>
+  </div>
+  <hr class="udividerow">
+
+
+  <div class="loading-container" *ngIf="isLoading">
+    <p>Cargando venta...</p>
+  </div>
+
+  <div *ngIf="!isLoading" >
+
+    <div class="uflex-v gap20">
+      <div class="uflex uflex-jbtw gap10">
+    <h2 class="heading-st2">Detalle de venta</h2>
+      <div class="uflex aicenter gap15 h100">
+        <label>Estado: </label>
+        <strong class="tag utag" [ngClass]="'tag-' + normalizeClass()">
+          {{ sellForm.get('estado')?.value }}
+        </strong>
+      </div>
+
+    </div>
+      <div class="cardElements uflex uflex-wrap uflex-jbtw">
+    <div class="gridform  gap20 mb30" [formGroup]="sellForm">
+    <div class="fielditem uflex-v gap10">
+      <label for="">ID</label>
+      <input type="text" pInputText formControlName="ventaId" readonly>
+      <small>*Campo no editable</small>
+    </div>
+    <div class="fielditem uflex-v gap10">
+      <label for="">Fecha</label>
+      <input type="text" pInputText formControlName="fecha" readonly>
+      <small>*Campo no editable</small>
+    </div>
+    <div class="fielditem uflex-v gap10">
+      <label for="">Cliente</label>
+      <input type="text" pInputText formControlName="cliente" readonly>
+      <small>*Campo no editable</small>
+    </div>
+
+    <div class="fielditem uflex-v gap10">
+      <label for="">Azucar:</label>
+      <input type="text" pInputText formControlName="producto" readonly>
+      <small>*Campo no editable</small>
+    </div>
+
+    <div class="fielditem uflex-v gap10">
+      <label for="">Cantidad</label>
+      <input type="text" pInputText formControlName="cantidad" [readonly]="!editable">
+
+    </div>
+
+    <div class="fielditem uflex-v gap10">
+      <label for="">Precio Unitario</label>
+      <input type="text" pInputText formControlName="precioVentaUnit" [readonly]="!editable">
+
+    </div>
+
+    </div>
+
+      @if(!editable){
+      <button type="button" class="uflex-center gap5 btn-primary mrequal" (click)="editStatus()"><i
+        class="material-symbols-outlined">edit_square</i>Modificar</button>
+}
+      @else if (editable){
+      <div class="uflex-v gap15 ">
+        <button type="button"  class="uflex-center gap5 btn-secondary mrequal" (click)="saveVenta()" ><i
+          class="material-symbols-outlined">save</i>Guardar</button>
+
+        <button  type="button" class="uflex-center gap5 btn-whitest mrequal" (click)="editStatus()"><i
+          class="material-symbols-outlined">cancel</i>Cancelar</button>
+
+      </div>
+
+      }
+
+
+  </div>
+  </div>
+
+    <div class="uflex-v gap20">
+      <div class="uflex uflex-jbtw gap10">
+        <h2 class="heading-st2">Detalle de gastos</h2>
+
+      </div>
+      <div class="cardElements uflex uflex-wrap uflex-jbtw" [formGroup]="sellForm">
+        <div formArrayName="gastos" class="w100">
+
+          <p-table
+            [value]="gastosArray.controls"
+            responsiveLayout="scroll"
+            styleClass="p-datatable-sm"
+            [tableStyle]="{'min-width': '50rem'}"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Tipo</th>
+                <th style="max-width: 70px;">Monto</th>
+                <th>Registrado por</th>
+                <th>Acciones</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+              <tr [formGroupName]="rowIndex">
+                <td>
+                  <div class="uflex-v gap5">
+                    <span>{{ row.get('tipo')?.value }}</span>
+
+                  </div>
+                </td>
+
+                <td style="max-width: 70px;" >
+                  @if (editingGastoRowIndex !== rowIndex) {
+                  <span>{{ row.get('monto')?.value }}</span>
+                  } @else {
+                  <input
+                    type="number"
+                    pInputText
+                    formControlName="monto"
+                  />
+
+                  @if (row.get('monto')?.invalid && row.get('monto')?.touched) {
+                  <small class="p-error">Monto inválido</small>
+                  }
+                  }
+                </td>
+
+                <td>
+                  <div class="uflex-v gap5">
+                    <span>{{ row.get('by')?.value }}</span>
+
+                  </div>
+                </td>
+
+                <td>
+                  @if (editingGastoRowIndex !== rowIndex) {
+                  <button type="button" (click)="editGastoRow(rowIndex)">
+                    <i class="material-symbols-outlined">edit_square</i>
+                  </button>
+                  } @else {
+                  <div class="uflex gap15">
+                    <button type="button" (click)="saveGastoRow(rowIndex)">
+                      <i class="material-symbols-outlined">save</i>
+                    </button>
+
+                    <button type="button" (click)="cancelEditGastoRow()">
+                      <i class="material-symbols-outlined">cancel</i>
+                    </button>
+                  </div>
+                  }
+
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+
+
+  </div>
+
+
+      <div class="uflex-v gap20">
+        <div class="uflex uflex-jbtw gap10">
+          <h2 class="heading-st2">A cuentas del cliente</h2>
+
+        </div>
+        <div class="cardElements uflex uflex-wrap uflex-jbtw" [formGroup]="sellForm">
+          <div formArrayName="pagos" class="w100">
+
+            <p-table
+              [value]="pagosArray.controls"
+              responsiveLayout="scroll"
+              styleClass="p-datatable-sm"
+              [tableStyle]="{'min-width': '50rem'}"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Id</th>
+                  <th>Fecha</th>
+                  <th style="max-width: 70px;">Monto</th>
+                  <th>Metodo</th>
+                  <th>Acciones</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+                <tr [formGroupName]="rowIndex">
+                  <td>
+                    <div class="uflex-v gap5">
+                      <span>{{ row.get('pagoId')?.value }}</span>
+
+                    </div>
+                  </td>
+
+                  <td>
+                    <div class="uflex-v gap5">
+                      <span>{{ row.get('fecha')?.value }}</span>
+
+                    </div>
+                  </td>
+
+                  <td style="max-width: 70px;" >
+                    @if (editingPagoRowIndex !== rowIndex) {
+                    <span>{{ row.get('monto')?.value }}</span>
+                    } @else {
+                    <input
+                      type="number"
+                      pInputText
+                      formControlName="monto"
+                    />
+
+                    @if (row.get('monto')?.invalid && row.get('monto')?.touched) {
+                    <small class="p-error">Monto inválido</small>
+                    }
+                    }
+                  </td>
+
+                  <td>
+                    <div class="uflex-v gap5">
+                      <span>{{ row.get('metodo')?.value }}</span>
+
+                    </div>
+                  </td>
+
+                  <td>
+                    @if (editingPagoRowIndex !== rowIndex) {
+                    <button type="button" (click)="editPagoRow(rowIndex)">
+                      <i class="material-symbols-outlined">edit_square</i>
+                    </button>
+                    } @else {
+                    <div class="uflex gap15">
+                      <button type="button" (click)="savePagoRow(rowIndex)">
+                        <i class="material-symbols-outlined">save</i>
+                      </button>
+
+                      <button type="button" (click)="cancelEditPagoRow()">
+                        <i class="material-symbols-outlined">cancel</i>
+                      </button>
+                    </div>
+                    }
+
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+
+
+
+        </div>
+</div>
+  </div>
+</div>
+</div>

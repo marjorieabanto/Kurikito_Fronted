@@ -60,9 +60,17 @@
           <span> Inactivo</span>
                     </strong>}
         @else  {
-                    <strong class="tag utag">
-                      <span> Activo </span>
-                    </strong>
+        <strong class="tag utag"  [ngClass]="'tag-' + normalizeClass(rowData[col.field])" [ngStyle]=" col.field=='situation'? {
+    'color': col.colorMap?.[rowData[col.field]] || '#000',
+    'background-color': col.field==='situation'
+      ? '#FFFFFF'
+      : col.colorMap?.[rowData[col.field]] + '33',
+    'border': col.field==='situation'
+      ? '1px solid ' + col.colorMap?.[rowData[col.field]]
+      : 'none'
+  } : null">
+          <span>{{ rowData[col.field] }}</span>
+        </strong>
                     }
 
         }

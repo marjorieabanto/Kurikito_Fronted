@@ -31,7 +31,7 @@ export class HomeComponent  {
 
   tiles: any[] = [
     { id:1,icon: 'groups_2', line2: 'Mis clientes', route: '/home/app',status: true },
-    { id:2,icon: 'sell',    line2: 'Mis ventas', route: '/main/operation/list-clients' ,status: true},
+    { id:2,icon: 'sell',    line2: 'Mis ventas', route: '/main/operation/list-sell' ,status: true},
     {  id:3,icon: 'trolley',line1: 'Mis compras'
       ,brand: true, route: '/home/app' ,status: true},
     { id:4,icon: 'inventory',             line1: 'Mi inventario', route: '/home/app',status: true},

@@ -44,12 +44,39 @@ export class ClientService {
       .pipe(catchError(this.handleError));
   }
 
-  getClientById(id: number): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.get<any>(`${this.apiUrl}/${id}`, { headers })
+  getSellById(id: string | null): Observable<any> {
+
+    return this.http.get<any>(`${this.apiUrl}?action=getVenta&ventaId=${id}`)
       .pipe(catchError(this.handleError));
   }
 
+  getProductos() {
+    return this.http.get<any>(`${environment.apiUrl}?action=listProductos`);
+  }
+
+
+  updatePago(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}?action=updatePago`, payload, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    });
+  }
+
+  updateGasto(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}?action=updateGasto`, payload, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    });
+  }
+  updateVenta(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}?action=updateVenta`, payload, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    });
+  }
   createClient(client: any): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post<any>(this.apiUrl, client, { headers })

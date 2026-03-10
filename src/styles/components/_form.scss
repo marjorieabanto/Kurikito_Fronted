@@ -36,7 +36,7 @@ label{
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   max-width: 800px;
-  
+
 }
 small{
   font-size: 13px;
@@ -50,7 +50,11 @@ small{
 
 .gridform{
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: repeat(auto-fit, minmax(250px, max-content));
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .gridform2{
@@ -153,7 +157,7 @@ p-calendar.ng-dirty.ng-invalid > .p-calendar > .p-inputtext {
 }
 
 .forflexfield{
-  
+
 }
 
 .hgfield{

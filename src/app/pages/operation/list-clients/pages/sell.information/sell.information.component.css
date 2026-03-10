@@ -1,0 +1,33 @@
+input:read-only {
+  background: #EEEEEE;
+  padding: 10px;
+  border-radius: 8px !important;
+}
+
+p-table{
+
+  & i {
+    color: #0D8A1C;
+  }
+}
+
+.utag{
+  font-size: 16px;
+  padding: 15px 15px;
+  width: auto;
+}
+.gridform{
+  grid-template-columns: repeat(auto-fit, minmax(300px, max-content));
+  align-items: start;
+  justify-content: space-between;
+  width: 80%;
+}
+@media (max-width: 768px) {
+
+  .gridform {
+
+
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+}

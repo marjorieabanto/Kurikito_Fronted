@@ -95,7 +95,8 @@
 
 /* === tag  start === */
 
-.utag{
+
+.utag {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -103,14 +104,27 @@
   color: var(--color-primary);
   font-size: 14px;
   width: 90px;
-  height: 28px;
+  min-height: 28px;
   padding: 7px 12px;
-  text-align: center ;
+  text-align: center;
   border-radius: 20px;
   font-weight: 600;
   line-height: 1;
 }
 
+tag-activo{
+
+  background-color: #A0F2C1;
+  color: #0D8A1C;
+}
+
+
+.tag-cancelada {
+
+  background-color: #FFDDE0;
+  color: #EF4B4B;
+
+}
 .tagP{
   display: flex;
   align-items: center;

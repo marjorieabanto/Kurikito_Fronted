@@ -8,16 +8,24 @@ export const OPERATION_ROUTES: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'list-clients',
+        redirectTo: 'list-sell',
         pathMatch: 'full',
       },
       {
-        path: 'list-clients',
+        path: 'list-sell',
         loadComponent: () =>
           import('./list-clients/list-clients.component').then(
             (c) => c.ListClientsComponent
           ),
       },
+      {
+        path: 'list-sell/:id',
+        loadComponent: () =>
+          import('./list-clients/pages/sell.information/sell.information.component').then(
+            (c) => c.SellInformationComponent
+          ),
+      },
+
       {
         path: 'list-client-services',
         loadComponent: () =>

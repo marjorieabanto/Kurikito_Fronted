@@ -47,7 +47,7 @@ export class TableComponent<T> implements OnChanges {
     // Si cambia el conjunto de datos, actualizar la paginación
     if (changes['data']) {
       this.updatePagination();
-      
+
       // Si no se proporciona totalRecords, usar la longitud de los datos
       if (!this.totalRecords) {
         this.totalRecords = this.data.length;
@@ -79,20 +79,20 @@ export class TableComponent<T> implements OnChanges {
   onLazyLoad(event: any) {
     // Emitir el evento para que el componente padre pueda manejar la paginación
     this.lazyLoad.emit(event);
-    
+
     // Si no hay un manejador para el evento lazyLoad, realizar la paginación localmente
     if (this.lazyLoad.observed) {
       return;
     }
-    
+
     // Paginación local
     const first = event.first || 0;
     const rows = event.rows || this.rowsPerPage;
-    
+
     // Calcular el índice de inicio y fin para la página actual
     const startIndex = first;
     const endIndex = first + rows;
-    
+
     // Obtener los datos para la página actual
     this.paginatedData = this.data.slice(startIndex, endIndex);
   }
@@ -101,7 +101,7 @@ export class TableComponent<T> implements OnChanges {
     this.currentPage = event.page;
     this.rowsPerPage = event.rows;
     const first = event.first ?? (this.currentPage * this.rowsPerPage);
-    
+
     // Actualizar la paginación
     this.onLazyLoad({
       first,
@@ -110,5 +110,16 @@ export class TableComponent<T> implements OnChanges {
       sortOrder: this.sortOrder,
       filters: {},
     });
+  }
+
+  normalizeClass(value: string): string {
+    if (!value) return '';
+
+    return value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
   }
 }

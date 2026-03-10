@@ -1,4 +1,4 @@
-<div class="bogenetables">
+<div class="bogenetables" >
   <p-toast position="top-right"></p-toast>
 
   <div class="">
@@ -8,25 +8,32 @@
               type="button" pButton pRipple (click)="create()"><i class="material-symbols-outlined">add_diamond</i>Nuevo</button>
     </div>
 
-    <article class="uflex-jbtw uflex cardElements mb25 p-3">
+    <article class="uflex-jbtw uflex cardElements mb25 p-3" [formGroup]="formGlobalFilter">
       <div class="uflex gap20 " >
         <div class="input-icon brfield  ">
           <i class="material-symbols-outlined">search</i>
-          <input class="w100 search" [(ngModel)]="searchText" type="text" pInputText
-                 placeholder="Buscar por nombre o apellido" (input)="applyFilters()" (keyup)="onSearchDebug()" />
+          <input class="w100 search" formControlName="searchText" type="text" pInputText
+                 placeholder="Buscar por nombre o apellido" (input)="applyFiltersImmediate()"  />
         </div>
 
         <div class="uflex gap10 aicenter" >
           <label for="daterange">Fecha registro</label>
-          <p-date-picker [(ngModel)]="dateRange" selectionMode="range" inputId="daterange" dateFormat="dd/mm/yy"
+          <p-date-picker formControlName="dateRange" selectionMode="range" inputId="daterange" dateFormat="dd/mm/yy"
                          placeholder="Selecciona rango de fechas (puede ser el mismo día)" showIcon="true" (onSelect)="applyFiltersImmediate()"></p-date-picker>
         </div>
 
-        <div class="uflex gap10 aicenter uswithtogle">
-          <label>{{status? 'Activo': 'Inactivo'}}</label>
-          <p-toggleswitch [(ngModel)]="status" class="tag" [ngClass]="status? 'active':''"
-                         (onChange)="applyFiltersImmediate()">
-          </p-toggleswitch>
+
+
+        <div class="uflex gap10 aicenter">
+          <label for="bussiness" class="fw-bold">Estado: </label>
+          <p-select
+            [options]="states"
+            optionLabel="label"
+            optionValue="value"
+            formControlName="status"
+            placeholder="Seleccionar estado"
+            (onChange)="applyFiltersImmediate()">
+          </p-select>
         </div>
 
       </div>

@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { ActivatedRoute, Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { SelectModule } from "primeng/select";
 import { DatePickerModule } from "primeng/datepicker";
 import { InputTextModule } from "primeng/inputtext";
@@ -13,7 +13,7 @@ import { ConfirmModalComponent } from "../../../components/modals/confirm-modal/
 import { ClientService } from "../../../services/client-managament/client.service";
 import { CountryCodeService } from "../../../services/country-code.service";
 import { Client } from "../../../models/client.model";
-import { MessageService } from "primeng/api";
+import {LazyLoadMeta, MessageService} from "primeng/api";
 import { ToastModule } from "primeng/toast";
 import {ToggleSwitchModule} from "primeng/toggleswitch";
 
@@ -21,6 +21,7 @@ import {ToggleSwitchModule} from "primeng/toggleswitch";
   selector: 'app-list-clients',
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     FormsModule,
     SelectModule,
     DatePickerModule,
@@ -35,14 +36,17 @@ import {ToggleSwitchModule} from "primeng/toggleswitch";
   providers: [DialogService, MessageService]
 })
 export class ListClientsComponent implements OnInit {
-  searchText: string = '';
+
+  private formBuilder = inject(FormBuilder);
+
+searchText:String= '';
   dateRange: Date[] | undefined;
   isLoading: boolean = false;
   allClients: Client[] = [];
   filterTimeout: any;
 
-  // Estos son los datos filtrados que envías al app-table
-  data: Client[] = [];
+
+  data: any[] = [];
 
   status: boolean = true;
 
@@ -52,10 +56,10 @@ export class ListClientsComponent implements OnInit {
   ];
 
   columns = [
-    { field: 'id', header: 'Id' },
-    { field: 'fecha', header: 'Fecha de registro' },
+    { field: 'ventaId', header: 'Id' },
+    { field: 'fechaFmt', header: 'Fecha de registro' },
     { field: 'cliente', header: 'Nombre' },
-    { field: 'productoId', header: 'Producto' },
+    { field: 'productoNombre', header: 'Producto' },
 
     { field: 'cantidad', header: 'cantidad' },
     { field: 'precioVentaUnit', header: 'P. Venta' },
@@ -63,7 +67,7 @@ export class ListClientsComponent implements OnInit {
       field: 'estado',
       header: 'Estado',
       type: 'tag',
-      colorMap: { Activo: 'green', Inactivo: 'red', Pendiente: 'orange' },
+      colorMap: { Activo: 'green', Cancelado: 'red', Pendiente: 'orange' },
     },
     {
       field: 'actions',
@@ -74,11 +78,17 @@ export class ListClientsComponent implements OnInit {
   ];
 
   ref: DynamicDialogRef | undefined;
-  services: any[] = [
-    'Telefonia', 'Internet', 'TV'
+  states = [
+    { label: 'Todos', value: '' },
+    { label: 'Activa', value: 'ACTIVA' },
+    { label: 'Cancelada', value: 'CANCELADA' },
   ];
 
-  serviceSelected: any = null;
+
+  formGlobalFilter: FormGroup = this.buildFormGlobalFilter();
+
+  productMap = new Map<number, string>();
+
 
 
   constructor(
@@ -92,22 +102,30 @@ export class ListClientsComponent implements OnInit {
 
   ngOnInit() {
     this.loadClients();
+    this.loadProductosAndVentas();
+  }
+
+  private buildFormGlobalFilter(): FormGroup {
+    return this.formBuilder.group({
+      searchText: [''],
+      dateRange: [null],   // range: [Date, Date]
+      status: ['']         // '' | 'ACTIVA' | 'CANCELADA'
+    });
   }
 
   loadClients() {
     this.isLoading = true;
     this.clientService.getAllClients().subscribe({
       next: (response) => {
+        this.allClients = (response.data || []).map((v: any) => ({
+          ...v,
+          productoNombre: this.productMap.get(Number(v.productoId)) ?? `ID ${v.productoId}`,
+          fechaFmt: this.formatYMD(new Date(v.fecha))
+        }));
 
-        console.log("respuesta:"+ response);
+        this.data = [...this.allClients];
 
-          this.data = response.data;
 
-        console.log(this.data)
-        console.log('ventas cargados:', this.data.length, this.data);
-
-        // Aplicar filtros iniciales (por defecto solo activos)
-       //this.executeFilters();
 
         this.isLoading = false;
       },
@@ -122,148 +140,75 @@ export class ListClientsComponent implements OnInit {
     });
   }
 
-  formatPhoneForDisplay(phone: string): string {
-    if (!phone) return phone;
 
-    // Parsear el número desde la base de datos
-    const phoneData = this.countryCodeService.parsePhoneFromDatabase(phone);
+  loadProductosAndVentas() {
+    this.isLoading = true;
 
-    if (phoneData.country && phoneData.phoneNumber) {
-      return this.countryCodeService.formatForDisplay(phoneData.phoneNumber, phoneData.country);
-    }
+    this.clientService.getProductos().subscribe({
+      next: (res) => {
+        (res.data || []).forEach((p: any) => {
+          this.productMap.set(Number(p.productoId), String(p.nombre));
+        });
 
-    return phone; // Fallback al número original si no se puede parsear
+        // luego cargas ventas
+        this.loadClients();
+      },
+      error: () => {
+        // si falla productos, igual cargas ventas
+        this.loadClients();
+      }
+    });
   }
 
-  applyFilters() {
-    // Limpiar timeout anterior si existe
-    if (this.filterTimeout) {
-      clearTimeout(this.filterTimeout);
-    }
 
-    // Debounce para búsqueda de texto
-    this.filterTimeout = setTimeout(() => {
-      this.executeFilters();
-    }, 300);
+  private formatYMD(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
   }
+
 
   executeFilters() {
     this.isLoading = true;
-    let filtered = [...this.allClients];
 
-    // Debug inicial: mostrar todos los clientes y sus fechas
-    console.log('=== DEBUG CLIENTES ===');
-    console.log('Total clientes:', this.allClients.length);
-    if (this.allClients.length > 0) {
-      this.allClients.slice(0, 3).forEach((client, index) => {
-        console.log(`Cliente ${index + 1}:`, {
-          nombre: client.userFirstName,
-          fechaCreacion: client.created,
-          fechaParsed: new Date(client.created),
-          activo: client.active,
-          typeof: typeof client.created
-        });
+      const searchText = String(this.formGlobalFilter.value.searchText || '').trim().toLowerCase();
+      const status = String(this.formGlobalFilter.value.status || '').trim().toUpperCase();
+      const dateRange = this.formGlobalFilter.value.dateRange as Date[] | null;
+
+      const start = dateRange?.[0] ? this.startOfDay(dateRange[0]) : null;
+      const end = dateRange?.[1] ? this.endOfDay(dateRange[1]) : null;
+
+      this.data = this.allClients.filter((v: any) => {
+        const matchText = !searchText || String(v.cliente || '').toLowerCase().includes(searchText);
+        const matchStatus = !status || String(v.estado || '').toUpperCase() === status;
+
+        const vDate: Date | null = v.fechaObj ?? new Date(v.fecha);
+        const matchDate =
+          (!start && !end) ||
+          (vDate && start && end && vDate >= start && vDate <= end) ||
+          (vDate && start && !end && vDate >= start) ||
+          (vDate && !start && end && vDate <= end);
+
+        return matchText && matchStatus && matchDate;
       });
-    }
-
-    // Aplicar filtro de texto localmente si hay búsqueda (solo nombres y apellidos)
-    if (this.searchText && this.searchText.trim() !== '') {
-      const search = this.searchText.toLowerCase().trim();
-      filtered = filtered.filter(item => {
-        const firstName = (item.userFirstName || '').toLowerCase();
-        const lastName = (item.userLastName || '').toLowerCase();
-
-        return firstName.includes(search) || lastName.includes(search);
-      });
-    }
-
-    // Aplicar filtro de estado
-    if (this.status !== null && this.status !== undefined) {
-      filtered = filtered.filter(item => item.active === this.status);
-    }
-
-    // Aplicar filtro de fecha basado en cómo se ve en el frontend
-    if (this.dateRange && this.dateRange.length >= 1 && this.dateRange[0]) {
-      const start = this.dateRange[0];
-      const end = this.dateRange[1] || start;
-
-      // Convertir las fechas del filtro a string en formato local (como se ve en frontend)
-      const startDateString = start.toLocaleDateString('es-ES');
-      const endDateString = end.toLocaleDateString('es-ES');
-
-      console.log('Filtro por fecha visual:', {
-        inicioFiltro: startDateString,
-        finFiltro: endDateString
-      });
-
-      filtered = filtered.filter(item => {
-        if (!item.created) return false;
-
-        // Convertir la fecha del cliente evitando problemas de zona horaria
-        let clientDateString: string;
-
-        if (item.created.includes('-')) {
-          // Si viene en formato YYYY-MM-DD, parsearlo directamente
-          const [year, month, day] = item.created.split('-');
-          clientDateString = `${parseInt(day)}/${parseInt(month)}/${year}`;
-        } else {
-          // Fallback al método original
-          const createdDate = new Date(item.created);
-          if (isNaN(createdDate.getTime())) return false;
-          clientDateString = createdDate.toLocaleDateString('es-ES');
-        }
-
-        // Comparar las fechas como strings (como se ven visualmente)
-        const cumpleFiltro = this.isDateInRange(clientDateString, startDateString, endDateString);
-
-        console.log('Cliente:', item.userFirstName, {
-          fechaOriginal: item.created,
-          fechaVisual: clientDateString,
-          cumpleFiltro: cumpleFiltro
-        });
-
-        return cumpleFiltro;
-      });
-    }
-
-    // Formatear números de teléfono para los datos filtrados
-    this.data = filtered.map((client: Client) => ({
-      ...client,
-      formattedPhone: this.formatPhoneForDisplay(client.userPhone)
-    }));
-
-    console.log('Filtros aplicados:', {
-      searchText: this.searchText,
-      status: this.status,
-      dateRange: this.dateRange,
-      totalClients: this.allClients.length,
-      filteredClients: this.data.length,
-      clientesOriginalCount: this.allClients.length,
-      clientesFiltradosCount: filtered.length,
-      primerosClientes: this.allClients.slice(0, 3).map(c => ({
-        nombre: c.userFirstName,
-        fechaCreacion: c.created,
-        activo: c.active
-      }))
-    });
-
-    // Debug específico para fechas
-    if (this.dateRange && this.dateRange.length >= 1 && this.dateRange[0]) {
-      const start = this.dateRange[0];
-      const end = this.dateRange[1] || start;
-
-      console.log('Filtro de fecha:', {
-        fechaInicio: start,
-        fechaFin: end,
-        esMismoDia: start.toDateString() === end.toDateString(),
-        soloUnaFecha: !this.dateRange[1]
-      });
-    }
 
     this.isLoading = false;
-  }
+    }
 
-  // Método para filtros inmediatos (sin debounce)
+  private startOfDay(d: Date): Date {
+      const x = new Date(d);
+      x.setHours(0, 0, 0, 0);
+      return x;
+    }
+
+  private endOfDay(d: Date): Date {
+      const x = new Date(d);
+      x.setHours(23, 59, 59, 999);
+      return x;
+    }
+
+
   applyFiltersImmediate() {
     if (this.filterTimeout) {
       clearTimeout(this.filterTimeout);
@@ -271,20 +216,16 @@ export class ListClientsComponent implements OnInit {
     this.executeFilters();
   }
 
-  // Debug temporal
-  onSearchDebug() {
-    console.log('Texto de búsqueda:', this.searchText);
-  }
 
 
   clearFilters() {
-    this.searchText = '';
-    this.dateRange = undefined;
-    this.status = true; // Por defecto activos
-    this.serviceSelected = null;
-    this.applyFiltersImmediate();
+    this.formGlobalFilter.reset({
+      searchText: '',
+      dateRange: null,
+      status: ''
+    });
+    this.data = [...this.allClients];
   }
-
 
   create() {
     const ref = this.dialogService.open(ClientModalComponent, {
@@ -310,27 +251,7 @@ export class ListClientsComponent implements OnInit {
   }
 
   onEdit(row: any) {
-    const ref = this.dialogService.open(ClientModalComponent, {
-      data: {
-        mode: 'Editar',
-        client: row
-      },
-      header: 'Editar cliente',
-      width: '500px',
-      modal: true,
-      dismissableMask: true,
-    });
-
-    ref.onClose.subscribe(result => {
-      if (result && result.success) {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Cliente actualizado correctamente'
-        });
-        this.loadClients();
-      }
-    });
+    this.router.navigate(['/main/operation/list-sell', row.ventaId]);
   }
   onDelete(row: any) {
     const ref = this.dialogService.open(ConfirmModalComponent, {
