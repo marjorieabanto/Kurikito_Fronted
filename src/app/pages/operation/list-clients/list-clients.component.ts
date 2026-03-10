@@ -52,7 +52,7 @@ searchText:String= '';
 
   actions = [
     { icon: 'eye_tracking', action: (row: any) => this.onEdit(row) },
-    { icon: 'edit_square', action: (row: any) => this.onDelete(row) },
+    //{ icon: 'edit_square', action: (row: any) => this.onDelete(row) },
   ];
 
   columns = [
