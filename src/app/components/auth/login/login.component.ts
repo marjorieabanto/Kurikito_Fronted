@@ -46,7 +46,7 @@ export class LoginComponent {
   onLogin() {
     // Limpiar espacios del username
     this.username = this.username.trim();
-    
+
     // Validar que los campos no estén vacíos
     if (!this.username || !this.password.trim()) {
       this.errorMessage = 'Por favor, complete todos los campos.';
@@ -80,7 +80,7 @@ export class LoginComponent {
         error: (error) => {
           console.error('Error de login:', error);
           this.isLoading = false;
-          
+
           // Manejar diferentes tipos de errores
           if (error.status === 401) {
             this.errorMessage = 'Credenciales incorrectas.\nVerifique su email y contraseña.';
@@ -96,7 +96,32 @@ export class LoginComponent {
   }
 
   onLogin1(){
-    this.router.navigate(['/main']);
+
+    this.username = this.username.trim();
+
+    // Validar que los campos no estén vacíos
+    if (!this.username || !this.password.trim()) {
+      this.errorMessage = 'Por favor, complete todos los campos.';
+      return;
+    }
+
+    // Validar formato de email
+    if (!this.validateEmailFormat(this.username)) {
+      this.errorMessage = 'Por favor, ingrese un correo electrónico válido.';
+      return;
+    }
+
+    // Validar longitud mínima de la contraseña
+    if (this.password.trim().length < 3) {
+      this.errorMessage = 'La contraseña debe tener al menos 3 caracteres.';
+      return;
+    }
+
+    if(this.username=='admin@kurikito.com' && this.password=='1234'){
+    this.router.navigate(['/main']);}else {
+
+      this.errorMessage='Error de autenticación'
+    }
   }
 
   ngOnInit(): void {
