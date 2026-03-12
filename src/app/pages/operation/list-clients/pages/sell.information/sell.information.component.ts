@@ -11,10 +11,11 @@ import {SelectModule} from "primeng/select";
 import {InputTextModule} from "primeng/inputtext";
 import {TableModule} from "primeng/table";
 import {SuccessModalComponent} from "../../../../../components/modals/success-modal/success-modal.component";
+import {ChartModule} from "primeng/chart";
 
 @Component({
   selector: 'app-sell.information',
-  imports: [ReactiveFormsModule, TableModule,CommonModule, FormsModule, SelectModule, InputTextModule],
+  imports: [ChartModule,ReactiveFormsModule, TableModule,CommonModule, FormsModule, SelectModule, InputTextModule],
   templateUrl: './sell.information.component.html',
   styleUrl: './sell.information.component.css',
   providers: [DialogService, MessageService]
@@ -86,6 +87,7 @@ export class SellInformationComponent implements OnInit{
     this.loadSell();
 
 
+
   }
 
 
@@ -112,6 +114,7 @@ export class SellInformationComponent implements OnInit{
           this.sell = response.data.venta;
           this.spend = response.data.gastos;
           this.payments=response.data.pagos;
+          this.paymentSummary=response.data.totales;
 
 
           if (!v) return;
@@ -221,6 +224,7 @@ export class SellInformationComponent implements OnInit{
   }
 
   originalVentaData: any = null;
+  paymentSummary: any;
 
   editStatus(): void {
     if (!this.editable) {
@@ -402,5 +406,45 @@ export class SellInformationComponent implements OnInit{
     });
 
   }
+
+  parseCurrency(value: any): number {
+    if (value === null || value === undefined) return 0;
+
+    if (typeof value === 'number') return value;
+
+    return Number(
+      String(value)
+        .replace(/[^\d.-]/g, '')
+        .trim()
+    ) || 0;
+  }
+
+  formatMoney(value: number): string {
+    return new Intl.NumberFormat('es-PE', {
+      style: 'currency',
+      currency: 'PEN',
+      minimumFractionDigits: 2
+    }).format(value || 0);
+  }
+
+  paymentChartData: any;
+  paymentChartOptions: any;
+
+
+  get progressColor(): string {
+    if (this.paymentSummary.saldo <= 0) return '#2e7d32';
+    if (this.paymentSummary.totalPagado > 0) return '#f59e0b';
+    return '#ef4444';
+  }
+
+  get porcentajePagado(): number {
+    const total = this.paymentSummary.totalAPagar;
+    const pagado = this.paymentSummary.totalPagado;
+
+    if (!total) return 0;
+
+    return Math.min((pagado / total) * 100, 100);
+  }
+
 
 }

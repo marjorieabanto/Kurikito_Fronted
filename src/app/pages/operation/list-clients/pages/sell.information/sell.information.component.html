@@ -1,12 +1,18 @@
 <div class="">
-  <div class=" uflex-jbtw uflex-wrap gap20 aicenter">
+  <div class=" uflex-jbtw uflex-wrap gap20 mb20 aicenter">
+
+    <div class="uflex aicenter gap20">
     <h2 class="headingst">Información de venta {{ sellForm.get('ventaId')?.value }}</h2>
+      <strong class="tag utag" [ngClass]="'tag-' + normalizeClass()">
+        {{ sellForm.get('estado')?.value }}
+      </strong>
+  </div>
     <div class="uflex gap20">
       <button class="uflex-center gap5 btn-whitest mrequal" (click)="return()"><i
         class="material-symbols-outlined">subdirectory_arrow_left</i>Volver</button>
     </div>
   </div>
-  <hr class="udividerow">
+
 
 
   <div class="loading-container" *ngIf="isLoading">
@@ -15,17 +21,73 @@
 
   <div *ngIf="!isLoading" >
 
-    <div class="uflex-v gap20">
-      <div class="uflex uflex-jbtw gap10">
-    <h2 class="heading-st2">Detalle de venta</h2>
-      <div class="uflex aicenter gap15 h100">
-        <label>Estado: </label>
-        <strong class="tag utag" [ngClass]="'tag-' + normalizeClass()">
-          {{ sellForm.get('estado')?.value }}
-        </strong>
+    <div class="uflex-v uflex-jend gap20">
+
+
+
+      <div class="summary-item">
+
+        <div class="progress-header">
+          <span>Progreso de pago</span>
+          <strong>{{ porcentajePagado | number:'1.0-0' }}%</strong>
+        </div>
+
+        <div class="progress-bar">
+          <div
+            class="progress-value"
+            [style.width.%]="porcentajePagado"
+            [style.background]="progressColor">
+          </div>
+        </div>
+
       </div>
 
-    </div>
+      <div class="uflex-v gap20 payment-summary-section">
+        <div class="uflex uflex-jbtw gap10">
+          <h2 class="heading-st2">Resumen de venta</h2>
+        </div>
+
+        <div class="cardElements summary-card">
+          <div class="summary-grid">
+
+            <div class="summary-item">
+              <span class="label">Total base</span>
+              <strong>{{ formatMoney(paymentSummary.totalBase) }}</strong>
+            </div>
+
+            <div class="summary-item">
+              <span class="label">Gastos del cliente</span>
+              <strong>{{ formatMoney(paymentSummary.gastosCliente) }}</strong>
+            </div>
+
+            <div class="summary-item total-highlight">
+              <span class="label">Total a pagar</span>
+              <strong>{{ formatMoney(paymentSummary.totalAPagar) }}</strong>
+            </div>
+
+            <div class="summary-item paid">
+              <span class="label">Total pagado</span>
+              <strong>{{ formatMoney(paymentSummary.totalPagado) }}</strong>
+            </div>
+
+            <div class="summary-item"
+                 [ngClass]="paymentSummary.saldo > 0 ? 'pending' : 'favor'">
+        <span class="label">
+          {{ paymentSummary.saldo > 0 ? 'Saldo pendiente' : 'Saldo a favor' }}
+        </span>
+              <strong>{{ formatMoney(paymentSummary.saldo) }}</strong>
+            </div>
+
+
+
+          </div>
+
+        </div>
+      </div>
+
+      <div class="uflex-v uflex-jbtw gap10">
+        <h2 class="heading-st2">Detalle de venta</h2>
+
       <div class="cardElements uflex uflex-wrap uflex-jbtw">
     <div class="gridform  gap20 mb30" [formGroup]="sellForm">
     <div class="fielditem uflex-v gap10">
@@ -83,6 +145,7 @@
 
   </div>
   </div>
+
 
     <div class="uflex-v gap20">
       <div class="uflex uflex-jbtw gap10">
@@ -257,6 +320,10 @@
 
         </div>
 </div>
+
+
+
   </div>
+</div>
 </div>
 </div>
