@@ -1,6 +1,6 @@
 <div class="modal-container">
   <div class="modal-header uflex uflex-jbtw">
-    <h2 class="headingst"> {{config.data.mode}} cliente</h2>
+    <h2 class="headingst"> {{config.data.mode}} venta</h2>
   </div>
 
   <p-toast position="top-right"></p-toast>
@@ -12,9 +12,10 @@
           <p>{{errorMessage}}</p>
         </div>
 
+        <div class="uflex-v gap20">
         <!-- Nombre -->
           <div class="uflex-v gap10">
-            <label for="userFirstName" class="fw-bold">Nombre *</label>
+            <label for="userFirstName" class="fw-bold">Cliente *</label>
             <input
               type="text"
               id="userFirstName"
@@ -28,81 +29,130 @@
           </div>
 
         <!-- Apellido -->
-        <div class="uflex-v gap10">
-          <label for="userLastName" class="fw-bold">Apellido *</label>
-          <input
-            type="text"
-            id="userLastName"
-            formControlName="userLastName"
-            placeholder="Ingrese el apellido"
-            [class.error]="isFieldInvalid('userLastName')"
-          />
-          <small *ngIf="isFieldInvalid('userLastName')" class="error-text">
-            {{getFieldError('userLastName')}}
-          </small>
+        <div class="uflex-v gap10 w100">
+          <label for="daterange">Fecha </label>
+          <p-date-picker
+            formControlName="fecha"
+            selectionMode="single"
+            inputId="daterange"
+            dateFormat="dd/mm/yy"
+            placeholder="Elige fecha "
+            showIcon="true"
+            name="fecha"
+            inputStyleClass="w100"
+          ></p-date-picker>
         </div>
 
         <!-- Email -->
-        <div class="uflex-v gap10">
-          <label for="userEmail" class="fw-bold">Email</label>
-          <input
-            type="email"
-            id="userEmail"
-            formControlName="userEmail"
-            placeholder="correo@ejemplo.com"
-            [class.error]="isFieldInvalid('userEmail')"
-          />
-          <small *ngIf="isFieldInvalid('userEmail')" class="error-text">
-            {{getFieldError('userEmail')}}
-          </small>
+        <div class="uflex-v gap10 ">
+          <label for="product" class="fw-bold">Producto: </label>
+          <p-autocomplete
+            id="product"
+            placeholder=""
+            [suggestions]="filteredProduct"
+            [dropdown]="true"
+            optionLabel="nombre"
+            formControlName="producto"
+            (completeMethod)="search($event)" fluid></p-autocomplete>
+
+          <p-message *ngIf="isFieldInvalid('producto')" severity="error" size="small" variant="simple">Se debe introducir un producto.</p-message>
+
+
         </div>
 
-        <!-- Selector de País -->
-        <div class="uflex-v gap10">
-          <label for="country" class="fw-bold">País *</label>
-          <p-select
-            [options]="countries"
-            formControlName="country"
-            optionLabel="name"
-            placeholder="Seleccione un país"
-            (onChange)="onCountryChange($event.value)"
-            [showClear]="false"
-          >
-            <ng-template pTemplate="selectedItem">
-              <div class="uflex aicenter gap10">
-                <span>{{selectedCountry.flag}}</span>
-                <span>{{selectedCountry.name}} (+{{selectedCountry.dialCode}})</span>
-              </div>
-            </ng-template>
-            <ng-template let-country pTemplate="item">
-              <div class="uflex aicenter gap10">
-                <span>{{country.flag}}</span>
-                <span>{{country.name}} (+{{country.dialCode}})</span>
-              </div>
-            </ng-template>
-          </p-select>
-        </div>
 
-        <!-- Número de teléfono -->
-        <div class="uflex-v gap10">
-          <label for="userPhone" class="fw-bold">Número de celular *</label>
-          <div class="phone-input-container">
-            <div class="country-prefix">
-              <span>{{selectedCountry.flag}} +{{selectedCountry.dialCode}}</span>
-            </div>
-            <input
-              type="text"
-              id="userPhone"
-              formControlName="userPhone"
-              [placeholder]="'Máximo ' + selectedCountry.maxLength + ' dígitos'"
-              [maxlength]="selectedCountry.maxLength"
-              [class.error]="isFieldInvalid('userPhone')"
-              class="phone-input"
+
+       <div class="gridform  gap20">
+        <div class="uflex-v w100 gap10">
+          <label for="amount" class="fw-bold">Cantidad *</label>
+
+
+            <p-inputNumber
+              id="amount"
+              formControlName="amount"
+              [fluid]="true"
+              [class.error]="isFieldInvalid('amount')"
+
             />
-          </div>
-          <small *ngIf="isFieldInvalid('userPhone')" class="error-text">
-            {{getFieldError('userPhone')}}
+
+          <small *ngIf="isFieldInvalid('amount')" class="error-text">
+            {{getFieldError('minlenght')}}
           </small>
+        </div>
+
+        <div class="uflex-v w100 gap10">
+          <label for="price" class="fw-bold">Precio venta *</label>
+
+
+            <p-inputNumber
+              id="price"
+              formControlName="price"
+              [fluid]="true"
+              [class.error]="isFieldInvalid('price')"
+
+            />
+
+          <small *ngIf="isFieldInvalid('amount')" class="error-text">
+            {{getFieldError('minlenght')}}
+          </small>
+        </div>
+
+       </div>
+
+        </div>
+
+        <div>
+          <h2>Gastos</h2>
+
+       <div class="gridform gap20 w100">
+
+          <div class="uflex-v w100 gap10">
+            <label for="flete" class="fw-bold">Flete *</label>
+
+
+              <p-inputNumber
+                id="flete"
+                formControlName="flete"
+                [fluid]="true"
+                [class.error]="isFieldInvalid('flete')"
+
+              />
+
+
+          </div>
+
+          <div class="uflex-v w100 gap10">
+            <label for="ingreso" class="fw-bold">Ingreso *</label>
+
+
+              <p-inputNumber
+                id="ingreso"
+                formControlName="ingreso"
+                [fluid]="true"
+                [class.error]="isFieldInvalid('ingreso')"
+
+              />
+
+
+          </div>
+
+          <div class="uflex-v w100 gap10">
+            <label for="desest" class="fw-bold">Desestiba *</label>
+
+
+              <p-inputNumber
+                id="desest"
+                formControlName="desest"
+                [fluid]="true"
+                [class.error]="isFieldInvalid('desest')"
+
+              />
+
+
+          </div>
+
+       </div>
+
         </div>
 
         <!-- Botones -->

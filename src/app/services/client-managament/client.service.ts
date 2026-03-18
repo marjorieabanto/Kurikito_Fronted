@@ -77,11 +77,13 @@ export class ClientService {
       })
     });
   }
-  createClient(client: any): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.post<any>(this.apiUrl, client, { headers })
-      .pipe(catchError(this.handleError));
-  }
+  createVenta(payload: any): Observable<any> {
+
+    return this.http.post<any>(`${this.apiUrl}?action=createVenta`, payload,{
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }) });
+    }
 
   updateClient(id: number, client: any): Observable<any> {
     const headers = this.getAuthHeaders();

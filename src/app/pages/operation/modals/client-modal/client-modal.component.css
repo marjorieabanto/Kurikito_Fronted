@@ -1,7 +1,20 @@
-p-inputnumber{
+::ng-deep  p-inputnumber{
   height: 48px !important;
   text-align: center ;
   font-size: 16px;
+  & input {
+    width: 100%;
+  }
+}
+
+::ng-deep p-inputtex{
+  width: 100%;
+}
+
+::ng-deep p-datepicker{
+
+  max-width: none;
+  width: 100%;
 }
 
 ::ng-deep input#peso.p-inputtext.p-component.p-inputnumber-input {
@@ -14,10 +27,14 @@ input{
   padding: 10px;
   border-radius: 8px !important;
   border: 1px solid #cbd5e1;
+  width: 100%;
 }
 
 .modal-container{
   text-align: start;
+  overflow-y: auto;
+  max-height: 83vh;
+  padding-top: 0;
 }
 
 .error-message {
@@ -47,52 +64,32 @@ input.error {
   display: block;
 }
 
-/* Estilos para el input de teléfono */
-.phone-input-container {
-  display: flex;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  overflow: hidden;
+::ng-deep p-datepicker{
+
+width: 100% !important;
+  max-width:none ;
+  & span {
+
+    max-width:none ;
+
+  }
+  & calendaricon {
+
+    color: #00B94C;
+    margin-right: 10px;
+  }
 }
 
-.country-prefix {
-  background-color: #f8f9fa;
-  border-right: 1px solid #cbd5e1;
-  padding: 10px 12px;
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  font-weight: 500;
-  min-width: 120px;
-  justify-content: center;
-}
+.gridform{
+  grid-template-columns: repeat(auto-fit, minmax(100px, max-content));
 
-.phone-input {
-  flex: 1;
-  border: none !important;
-  outline: none;
-  padding: 10px 12px;
-  font-size: 16px;
-  border-radius: 0;
 }
+@media (max-width: 768px) {
 
-.phone-input:focus {
-  box-shadow: none;
-}
+  .gridform {
 
-.phone-input-container:focus-within {
-  border-color: var(--color-primary, #007bff);
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
 
-.phone-input-container.error {
-  border-color: #e74c3c;
-}
-
-.phone-hint {
-  color: #6c757d;
-  font-size: 0.8rem;
-  font-style: italic;
-  margin-top: 0.25rem;
-  display: block;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
 }

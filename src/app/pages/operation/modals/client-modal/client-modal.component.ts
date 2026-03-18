@@ -1,6 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  FormsModule
+} from "@angular/forms";
 import { CommonModule } from "@angular/common";
 import { InputNumberModule } from "primeng/inputnumber";
 import { InputTextModule } from "primeng/inputtext";
@@ -11,13 +17,17 @@ import { CountryCodeService, Country } from '../../../../services/country-code.s
 import {Client, ClientRequest} from '../../../../models/client.model';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import {AutoCompleteModule} from "primeng/autocomplete";
+import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
+import {MessageModule} from "primeng/message";
+import {DatePickerModule} from "primeng/datepicker";
 
 @Component({
   selector: 'app-client-modal',
-  imports: [ReactiveFormsModule, CommonModule, InputNumberModule, InputTextModule, ButtonModule, ToastModule, SelectModule],
+  imports: [ReactiveFormsModule,MessageModule, AutoCompleteModule,CommonModule, InputNumberModule, InputTextModule, ButtonModule, ToastModule, SelectModule, DatePickerModule,FormsModule],
   templateUrl: './client-modal.component.html',
   styleUrl: './client-modal.component.css',
-  providers: [MessageService]
+
 })
 export class ClientModalComponent implements OnInit {
   clientForm: FormGroup;
@@ -28,6 +38,11 @@ export class ClientModalComponent implements OnInit {
   isLoading: boolean = false;
   countries: Country[] = [];
   selectedCountry!: Country;
+  productos:any[] =[];
+  filteredProduct:any[] = [];
+  productMap = new Map<number, string>();
+
+
 
   constructor(
     public ref: DynamicDialogRef,
@@ -39,87 +54,120 @@ export class ClientModalComponent implements OnInit {
   ) {
     this.countries = this.countryCodeService.getAllCountries();
     this.selectedCountry = this.countryCodeService.getDefaultCountry();
-    
+
     this.clientForm = this.fb.group({
       userFirstName: ['', [Validators.required, Validators.minLength(2), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)]],
-      userLastName: ['', [Validators.required, Validators.minLength(2), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)]],
-      userEmail: ['', [Validators.email]],
-      userPhone: ['', [Validators.required, Validators.pattern(/^[0-9]+$/), this.phoneValidator()]],
-      country: [this.selectedCountry, Validators.required]
+      fecha:[new Date(), ],
+      producto:[this.productMap,Validators.required],
+      amount: ['', Validators.required, Validators.min(1)],
+      price: ['', Validators.required, Validators.min(1)],
+      ingreso: [''],
+      flete: [''],
+      desest: [''],
+
     });
+
+
   }
 
-  phoneValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const phoneValue = control.value;
-      if (!phoneValue || !this.selectedCountry) {
-        return null; // Let required validator handle empty values
-      }
+  search(event: any) {
 
-      const cleanNumber = phoneValue.replace(/\D/g, '');
-      const isValidLength = cleanNumber.length === this.selectedCountry.maxLength;
-      
-      if (!isValidLength) {
-        return {
-          'phoneLength': {
-            actualLength: cleanNumber.length,
-            expectedLength: this.selectedCountry.maxLength,
-            country: this.selectedCountry.name
-          }
-        };
-      }
+    const query = event.query.toLowerCase();
+    this.filteredProduct = this.productos.filter(cliente =>
+      cliente.nombre.toLowerCase().includes(query)
+    );
 
-      return null;
+console.log(this.filteredProduct);
+  }
+
+  loadProduct() {
+    this.isLoading = true;
+
+    this.clientService.getProductos().subscribe({
+      next: (res) => {
+        this.productos=res.data;
+        console.log(this.productos);
+        (res.data || []).forEach((p: any) => {
+          this.productMap.set(Number(p.productoId), String(p.nombre));
+        });
+
+this.isLoading=false
+      },
+      error: () => {
+
+      }
+    });
+  }
+  getProductLabel(product: any): string {
+    if (typeof product === 'string') {
+      return product;
+    }
+    return product?.nombre || '';
+  }
+
+  getProductValue(product: any): any {
+    if (typeof product === 'string') {
+      return { name: product, custom: true };
+    }
+    return {
+      id: product.productoId,
+
     };
   }
 
+
   ngOnInit() {
+    this.loadProduct();
     this.isEditing = this.config.data.mode === 'Editar';
 
     if (this.isEditing && this.config.data.client) {
       const client = this.config.data.client;
       this.clientId = client.id;
-      
+
       // Parsear el número de teléfono desde la BD
       const phoneData = this.countryCodeService.parsePhoneFromDatabase(client.userPhone || '');
-      
-      this.clientForm.patchValue({
-        userFirstName: client.userFirstName,
-        userLastName: client.userLastName,
-        userEmail: client.userEmail || '',
-        userPhone: phoneData.phoneNumber,
-        country: phoneData.country || this.selectedCountry
-      });
-      
-      this.selectedCountry = phoneData.country || this.selectedCountry;
+
     }
   }
 
   guardar() {
+
     if (this.clientForm.invalid) {
-      this.markFormGroupTouched();
+      this.clientForm.markAllAsTouched();
       return;
     }
 
-    this.showError = false;
-    this.isLoading = true;
-
     const formValue = this.clientForm.value;
-    const phoneForDatabase = this.countryCodeService.formatForDatabase(
-      formValue.userPhone, 
-      formValue.country
-    );
 
-    const clientData: ClientRequest = {
-      userFirstName: formValue.userFirstName,
-      userLastName: formValue.userLastName,
-      userEmail: formValue.userEmail,
-      userPhone: phoneForDatabase,
-      active: true
+    const payload = {
+      fecha: this.formatDateToYMD(formValue.fecha),
+      cliente: formValue.userFirstName,
+      productoId: String(formValue.producto?.productoId ?? ''),
+      cantidad: Number(formValue.amount),
+      precioVentaUnit: Number(formValue.price),
+      estado: 'ACTIVA',
+      gastos: [
+        {
+          tipo: 'FLETE',
+          monto: Number(formValue.flete || 0),
+          asumidoPor: 'CLIENTE'
+        },
+        {
+          tipo: 'INGRESO',
+          monto: Number(formValue.ingreso || 0),
+          asumidoPor: 'CLIENTE'
+        },
+        {
+          tipo: 'DESESTIBA',
+          monto: Number(formValue.desest || 0),
+          asumidoPor: 'CLIENTE'
+        }
+      ].filter(g => g.monto > 0)
     };
 
-    if (this.isEditing && this.clientId) {
-      this.clientService.updateClient(this.clientId, clientData).subscribe({
+    console.log('payload => ', payload);
+
+      this.clientService.createVenta(payload).subscribe({
         next: (result) => {
           this.isLoading = false;
           this.ref.close({
@@ -132,21 +180,18 @@ export class ClientModalComponent implements OnInit {
           this.handleError(error);
         }
       });
-    } else {
-      this.clientService.createClient(clientData).subscribe({
-        next: (result) => {
-          this.isLoading = false;
-          this.ref.close({
-            success: true,
-            data: result
-          });
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.handleError(error);
-        }
-      });
-    }
+
+  }
+
+  formatDateToYMD(date: Date | string | null): string {
+    if (!date) return '';
+
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
   cancelar() {
@@ -158,10 +203,10 @@ export class ClientModalComponent implements OnInit {
   onCountryChange(country: Country) {
     this.selectedCountry = country;
     this.clientForm.patchValue({ country });
-    
+
     // Limpiar el teléfono cuando cambie el país
     this.clientForm.patchValue({ userPhone: '' });
-    
+
     // Re-validar el campo de teléfono con el nuevo país
     const phoneControl = this.clientForm.get('userPhone');
     if (phoneControl) {
@@ -187,7 +232,7 @@ export class ClientModalComponent implements OnInit {
     const field = this.clientForm.get(fieldName);
     if (field && field.errors && (field.dirty || field.touched)) {
       if (field.errors['required']) return 'Este campo es requerido';
-      if (field.errors['minlength']) return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
+      if (field.errors['minlength']) return `Ingresa un numero mayor a cero`;
       if (field.errors['pattern']) {
         if (fieldName === 'userFirstName' || fieldName === 'userLastName') {
           return 'Solo se permiten letras y espacios';

@@ -234,6 +234,7 @@ searchText:String= '';
       },
       header: 'Crear nuevo cliente',
       width: '500px',
+      height:'99vh',
       modal: true,
       dismissableMask: true,
     });
