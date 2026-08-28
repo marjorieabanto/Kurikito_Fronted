@@ -27,12 +27,12 @@ export class HomeComponent  {
   selectedMenu = '';
 
   tiles: any[] = [
-    { id:1,icon: 'groups_2', line2: 'Mis clientes', route: '/home/app',status: true },
+    { id:1,icon: 'groups_2', line2: 'Mis clientes', route: '/home/app',status: false },
     { id:2,icon: 'sell',    line2: 'Mis ventas', route: '/main/operation/list-sell' ,status: true},
     {  id:3,icon: 'trolley',line1: 'Mis compras'
-      ,brand: true, route: '/home/app' ,status: true},
-    { id:4,icon: 'inventory',             line1: 'Mi inventario', route: '/home/app',status: true},
-    { id:5,icon: 'list_alt_check',           line1: 'Reportes', route: '/home/app' ,status: true},
+      ,brand: true, route: '/main/operation/list-buy' ,status: true},
+    { id:4,icon: 'inventory',             line1: 'Mi inventario', route: '/home/app',status: false},
+    { id:5,icon: 'list_alt_check',           line1: 'Reportes', route: '/home/app' ,status: false},
     ];
 
   constructor(

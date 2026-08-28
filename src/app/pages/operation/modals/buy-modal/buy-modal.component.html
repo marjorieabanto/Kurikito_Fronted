@@ -1,0 +1,43 @@
+<div class="modal-container">
+  <h2 class="headingst">{{ config.data?.purchase ? 'Editar compra' : 'Nueva compra' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="save()" class="modal-body p-md uflex-v gap20">
+    <div class="uflex-v w100 gap10">
+      <label for="buy-date">Fecha *</label>
+      <p-date-picker id="buy-date" formControlName="fecha" dateFormat="dd/mm/yy" [showIcon]="true" [maxDate]="today"></p-date-picker>
+      @if (hasError('fecha', 'required')) { <small class="error-text">La fecha es obligatoria.</small> }
+      @if (hasError('fecha', 'futureDate')) { <small class="error-text">La fecha no puede ser futura.</small> }
+    </div>
+
+    <div class="uflex-v w100 gap10">
+      <label for="buy-product">Producto *</label>
+      <p-select id="buy-product" formControlName="productoId" [options]="products" optionLabel="nombre" optionValue="productoId" placeholder="Selecciona un producto"></p-select>
+      @if (hasError('productoId', 'required')) { <small class="error-text">Selecciona un producto.</small> }
+    </div>
+
+    <div class="uflex-v w100 gap10">
+      <label for="buy-quantity">Cantidad *</label>
+      <p-inputNumber id="buy-quantity" formControlName="cantidad" [min]="0.01" [fluid]="true"></p-inputNumber>
+      @if (hasError('cantidad', 'required')) { <small class="error-text">La cantidad es obligatoria.</small> }
+      @if (hasError('cantidad', 'min')) { <small class="error-text">La cantidad debe ser mayor a cero.</small> }
+    </div>
+
+    <div class="uflex-v w100 gap10">
+      <label for="buy-price">Precio de compra unitario *</label>
+      <p-inputNumber id="buy-price" formControlName="precioCompraUnit" [min]="0.01" mode="currency" currency="PEN" locale="es-PE" [fluid]="true"></p-inputNumber>
+      @if (hasError('precioCompraUnit', 'required')) { <small class="error-text">El precio es obligatorio.</small> }
+      @if (hasError('precioCompraUnit', 'min')) { <small class="error-text">El precio debe ser mayor a cero.</small> }
+    </div>
+
+
+    <div class="uflex uflex-center gap20 w100">
+      <button class="btn-primary uflex gap10 uflex-center" type="submit" [disabled]="isLoading || form.invalid">
+        <i class="material-symbols-outlined">check_circle</i> Guardar
+      </button>
+      <button class="btn-whitest uflex gap10 uflex-center" type="button" (click)="cancel()" [disabled]="isLoading">
+        <i class="material-symbols-outlined">cancel</i> Cancelar
+      </button>
+    </div>
+   
+  </form>
+</div>

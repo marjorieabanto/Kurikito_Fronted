@@ -1,0 +1,24 @@
+.modal-container {
+  padding: 1rem;
+}
+
+.modal-body {
+  padding-top: 1rem;
+}
+
+:host ::ng-deep p-date-picker,
+:host ::ng-deep p-select,
+:host ::ng-deep p-inputnumber {
+  width: 100%;
+}
+
+.error-text {
+  color: #e74c3c;
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep p-date-picker  span{
+ 
+  width: 100%;
+ 
+}

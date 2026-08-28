@@ -88,6 +88,7 @@ searchText:String= '';
   formGlobalFilter: FormGroup = this.buildFormGlobalFilter();
 
   productMap = new Map<number, string>();
+  productOptions: { label: string; value: string }[] = [];
 
 
 
@@ -108,7 +109,8 @@ searchText:String= '';
     return this.formBuilder.group({
       searchText: [''],
       dateRange: [null],   // range: [Date, Date]
-      status: ['']         // '' | 'ACTIVA' | 'CANCELADA'
+      status: [''],         // '' | 'ACTIVA' | 'CANCELADA'
+      productoId: ['']
     });
   }
 
@@ -151,6 +153,12 @@ searchText:String= '';
         productos.forEach((p: any) => {
           this.productMap.set(Number(p.productoId), String(p.nombre));
         });
+        this.productOptions = productos
+          .filter((p: any) => p.productoId !== undefined && p.productoId !== null)
+          .map((p: any) => ({
+            label: String(p.nombre || `ID ${p.productoId}`),
+            value: String(p.productoId)
+          }));
 
         this.allSells = ventas.map((v: any) => ({
           ...v,
@@ -185,6 +193,7 @@ searchText:String= '';
 
       const searchText = String(this.formGlobalFilter.value.searchText || '').trim().toLowerCase();
       const status = String(this.formGlobalFilter.value.status || '').trim().toUpperCase();
+      const productoId = String(this.formGlobalFilter.value.productoId || '').trim();
       const dateRange = this.formGlobalFilter.value.dateRange as Date[] | null;
 
       const start = dateRange?.[0] ? this.startOfDay(dateRange[0]) : null;
@@ -193,6 +202,7 @@ searchText:String= '';
       this.data = this.allSells.filter((v: any) => {
         const matchText = !searchText || String(v.cliente || '').toLowerCase().includes(searchText);
         const matchStatus = !status || String(v.estado || '').toUpperCase() === status;
+        const matchProduct = !productoId || String(v.productoId || '').trim() === productoId;
 
         const vDate: Date | null = v.fechaObj ?? new Date(v.fecha);
         const matchDate =
@@ -201,7 +211,7 @@ searchText:String= '';
           (vDate && start && !end && vDate >= start) ||
           (vDate && !start && end && vDate <= end);
 
-        return matchText && matchStatus && matchDate;
+        return matchText && matchStatus && matchProduct && matchDate;
       });
 
     this.isLoading = false;
@@ -233,7 +243,8 @@ searchText:String= '';
     this.formGlobalFilter.reset({
       searchText: '',
       dateRange: null,
-      status: ''
+      status: '',
+      productoId: ''
     });
     this.data = [...this.allSells];
   }
@@ -245,7 +256,7 @@ searchText:String= '';
       },
       header: 'Crear nuevo cliente',
       width: '500px',
-      height:'99vh',
+      //height:'99vh',
       modal: true,
       dismissableMask: true,
     });

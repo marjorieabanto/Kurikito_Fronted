@@ -1,0 +1,38 @@
+.modal-container {
+  padding: 0.25rem;
+}
+
+.modal-body {
+  padding-top: 1rem;
+}
+
+.p-error {
+  color: #b42318;
+}
+
+
+:host ::ng-deep p-date-picker  span{
+ 
+  width: 100%;
+ 
+}
+
+:host ::ng-deep p-date-picker .p-datepicker-input-wrapper,
+:host ::ng-deep p-date-picker .p-inputtext {
+  width: 100%;
+}
+
+:host ::ng-deep p-date-picker .p-inputtext {
+  font-size: 14px;
+}
+
+:host ::ng-deep p-date-picker .p-datepicker-input-icon-container {
+  color: #00B94C;
+  margin-right: 10px;
+}
+
+p-autocomplete p-inputwrapper {
+
+  width: 100% !important;
+}
+

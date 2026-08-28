@@ -10,12 +10,13 @@
   <div class="apps-grid" >
     @for(t of tiles; track t.line2){
 
-    @if(t.status==this.firstStep){
+    
     <div
 
       class="app-tile uflex-center uflex-v gap10"
-      [ngClass]="{'isBtnPageActive': selectedMenu === t.id}"
+      [ngClass]="{'isBtnPageActive': selectedMenu === t.id, 'isDisabled': !t.status}"
       [class.is-brand]="t.brand"
+   
       (click)="onClick(t)"
 
     >
@@ -42,7 +43,7 @@
 
 
     </div>
-    }
+    
     }
 
   </div>

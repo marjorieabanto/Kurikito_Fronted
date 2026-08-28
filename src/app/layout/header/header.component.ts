@@ -2,12 +2,13 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {InputTextModule} from "primeng/inputtext";
 import {Router} from "@angular/router";
+import {RouterLink} from "@angular/router";
 import {AuthService} from "../../services/auth.service";
 import {UserService} from "../../services/user/user.service";
 
 @Component({
     selector: 'app-header',
-    imports: [ReactiveFormsModule, InputTextModule],
+    imports: [ReactiveFormsModule, InputTextModule, RouterLink],
     templateUrl: './header.component.html',
     styleUrl: './header.component.css'
 })

@@ -59,9 +59,40 @@ export class SellService {
     return this.http.get<any>(`${environment.apiUrl}?action=listProductos`);
   }
 
+  getAllCompras(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}?action=listCompras`)
+      .pipe(catchError(this.handleError));
+  }
+
+  createCompra(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}?action=createCompra`, payload, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
+
+  updateCompra(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}?action=updateCompra`, payload, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
+
+  deleteCompra(compraId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}?action=deleteCompra`, { compraId }, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
+
 
   updatePago(payload: any): Observable<any> {
     return this.http.post(`${this.apiUrl}?action=updatePago`, payload, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    });
+  }
+
+  createPago(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}?action=createPago`, payload, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       })

@@ -11,6 +11,10 @@ function updateCompra_(payload) {
   return update_(SHEET_COMPRAS, "compraId", payload);
 }
 
+function deleteCompra_(payload) {
+  return deleteById_(SHEET_COMPRAS, "compraId", payload && payload.compraId);
+}
+
 function listProductos_() {
   // PRODUCTOS: productoId, nombre
   const cache = CacheService.getScriptCache();

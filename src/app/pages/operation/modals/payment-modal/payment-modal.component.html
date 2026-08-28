@@ -1,0 +1,59 @@
+<div class="modal-container">
+  <div class="modal-header">
+    <h2 class="headingst">Agregar abono</h2>
+  </div>
+
+  <form class="modal-body uflex-v gap20 p-md" [formGroup]="paymentForm" (ngSubmit)="save()">
+    <div class="uflex-v gap10 w100">
+      <label for="payment-date" class="fw-bold">Fecha</label>
+      <p-date-picker
+        inputId="payment-date"
+        formControlName="fecha"
+        dateFormat="dd/mm/yy"
+        [showIcon]="true"
+        [showOnFocus]="false">
+      </p-date-picker>
+      @if (paymentForm.controls.fecha.invalid && paymentForm.controls.fecha.touched) {
+        <small class="p-error">Selecciona una fecha.</small>
+      }
+    </div>
+
+    <div class="uflex-v gap10 w100">
+      <label for="payment-method" class="fw-bold">Método de pago</label>
+      <p-select
+        inputId="payment-method"
+        formControlName="metodo"
+        [options]="methods"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecciona un método">
+      </p-select>
+      @if (paymentForm.controls.metodo.invalid && paymentForm.controls.metodo.touched) {
+        <small class="p-error">Selecciona un método de pago.</small>
+      }
+    </div>
+
+    <div class="uflex-v gap10 w100">
+      <label for="payment-amount" class="fw-bold">Monto</label>
+      <p-inputnumber
+        inputId="payment-amount"
+        formControlName="monto"
+        mode="currency"
+        currency="PEN"
+        locale="es-PE">
+      </p-inputnumber>
+      @if (paymentForm.controls.monto.invalid && paymentForm.controls.monto.touched) {
+        <small class="p-error">Ingresa un monto mayor a cero.</small>
+      }
+    </div>
+
+    <div class="uflex uflex-center gap20 w100">
+      <button class="btn-primary uflex uflex-center" type="submit" [disabled]="isLoading">
+        <i class="material-symbols-outlined">payments</i> Guardar
+      </button>
+      <button class="btn-whitest uflex uflex-center" type="button" (click)="cancel()" [disabled]="isLoading">
+        <i class="material-symbols-outlined">cancel</i> Cancelar
+      </button>
+    </div>
+  </form>
+</div>

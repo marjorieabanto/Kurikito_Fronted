@@ -1,0 +1,12 @@
+.buy-page {
+  width: 100%;
+}
+
+:host ::ng-deep p-date-picker,
+:host ::ng-deep p-select {
+  min-width: 220px;
+}
+
+:host ::ng-deep p-date-picker {
+  max-width: 300px;
+}

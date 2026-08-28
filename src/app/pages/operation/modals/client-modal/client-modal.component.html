@@ -37,10 +37,14 @@
             inputId="daterange"
             dateFormat="dd/mm/yy"
             placeholder="Elige fecha "
-            showIcon="true"
+            [showIcon]="true"
+            [maxDate]="today"
             name="fecha"
             inputStyleClass="w100"
           ></p-date-picker>
+          <small *ngIf="isFieldInvalid('fecha')" class="error-text">
+            {{getFieldError('fecha')}}
+          </small>
         </div>
 
         <!-- Email -->
@@ -76,7 +80,7 @@
             />
 
           <small *ngIf="isFieldInvalid('amount')" class="error-text">
-            {{getFieldError('minlenght')}}
+            {{getFieldError('amount')}}
           </small>
         </div>
 
@@ -92,8 +96,8 @@
 
             />
 
-          <small *ngIf="isFieldInvalid('amount')" class="error-text">
-            {{getFieldError('minlenght')}}
+          <small *ngIf="isFieldInvalid('price')" class="error-text">
+            {{getFieldError('price')}}
           </small>
         </div>
 
@@ -107,7 +111,7 @@
        <div class="gridform gap20 w100">
 
           <div class="uflex-v w100 gap10">
-            <label for="flete" class="fw-bold">Flete *</label>
+            <label for="flete" class="fw-bold">Flete</label>
 
 
               <p-inputNumber
@@ -122,7 +126,7 @@
           </div>
 
           <div class="uflex-v w100 gap10">
-            <label for="ingreso" class="fw-bold">Ingreso *</label>
+            <label for="ingreso" class="fw-bold">Ingreso</label>
 
 
               <p-inputNumber
@@ -137,7 +141,7 @@
           </div>
 
           <div class="uflex-v w100 gap10">
-            <label for="desest" class="fw-bold">Desestiba *</label>
+            <label for="desest" class="fw-bold">Desestiba</label>
 
 
               <p-inputNumber

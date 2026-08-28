@@ -25,6 +25,13 @@ export const OPERATION_ROUTES: Routes = [
             (c) => c.SellInformationComponent
           ),
       },
+      {
+        path: 'list-buy',
+        loadComponent: () =>
+          import('./pages/buyList/buyList.component').then(
+            (c) => c.BuyListComponent
+          ),
+      },
 
       
     ]

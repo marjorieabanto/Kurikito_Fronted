@@ -1,0 +1,35 @@
+<div class="buy-page">
+  <p-toast position="top-right"></p-toast>
+
+  <div class="uflex uflex-jbtw mb20 uflex-wrap ststylecont">
+    <h2 class="headingst">Lista de compras</h2>
+    <button type="button" class="uflex-center gap5 btn-primary mrequal" pButton (click)="create()">
+      <i class="material-symbols-outlined">add_diamond</i> Nueva
+    </button>
+  </div>
+
+  <article class="uflex uflex-jbtw uflex-wrap gap20 cardElements mb25 p-3" [formGroup]="filterForm">
+    <div class="uflex gap20 uflex-wrap">
+      <div class="input-icon brfield">
+        <i class="material-symbols-outlined">search</i>
+        <input class="w100 search" pInputText formControlName="searchText" placeholder="Buscar por ID o producto" (input)="applyFilters()">
+      </div>
+      <div class="uflex gap10 uflex-wrap aicenter">
+        <label for="buy-date-filter">Fecha</label>
+        <p-date-picker inputId="buy-date-filter" formControlName="dateRange" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Selecciona rango" [showIcon]="true" (onSelect)="applyFilters()"></p-date-picker>
+      </div>
+      <div class="uflex gap10 uflex-wrap aicenter">
+        <label for="buy-product-filter">Producto</label>
+        <p-select inputId="buy-product-filter" formControlName="productoId" [options]="products" optionLabel="label" optionValue="value" placeholder="Todos los productos" [showClear]="true" (onChange)="applyFilters()" (onClear)="applyFilters()"></p-select>
+      </div>
+    </div>
+    <button pButton type="button" class="uflex-center btn-secondary" (click)="clearFilters()">
+      <i class="material-symbols-outlined">clear</i> Limpiar
+    </button>
+  </article>
+
+  <div class="loading-container" *ngIf="isLoading"><p>Cargando compras...</p></div>
+  <div *ngIf="!isLoading">
+    <app-table [columns]="columns" [data]="data" [actions]="actions"></app-table>
+  </div>
+</div>

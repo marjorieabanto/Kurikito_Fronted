@@ -31,6 +31,23 @@ i{
 
 }
 
+.app-tile.isDisabled{
+
+  background-color: rgb(232, 230, 230);
+  cursor: none;
+  pointer-events: none;
+  
+
+  i{
+
+    color: rgb(153, 153, 153);
+  }
+  color:rgb(153, 153, 153) ;
+  border-color:rgb(153, 153, 153) ;
+
+
+}
+
 .app-tile.isBtnPageActive, {
 
   background: var(--color-primary);

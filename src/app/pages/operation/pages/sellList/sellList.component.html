@@ -36,6 +36,21 @@
           </p-select>
         </div>
 
+        <div class="uflex gap10 uflex-wrap aicenter">
+          <label for="product-filter" class="fw-bold">Producto: </label>
+          <p-select
+            inputId="product-filter"
+            [options]="productOptions"
+            optionLabel="label"
+            optionValue="value"
+            formControlName="productoId"
+            placeholder="Todos los productos"
+            [showClear]="true"
+            (onChange)="applyFiltersImmediate()"
+            (onClear)="applyFiltersImmediate()">
+          </p-select>
+        </div>
+
       </div>
 
       <div class="uflex gap10">

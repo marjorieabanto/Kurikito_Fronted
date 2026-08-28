@@ -3,6 +3,8 @@ import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
 import {
   FormBuilder,
   FormGroup,
+  AbstractControl,
+  ValidationErrors,
   Validators,
   ReactiveFormsModule,
   FormsModule
@@ -41,6 +43,7 @@ export class ClientModalComponent implements OnInit {
   productos:any[] =[];
   filteredProduct:any[] = [];
   productMap = new Map<number, string>();
+  readonly today = new Date();
 
 
 
@@ -57,10 +60,10 @@ export class ClientModalComponent implements OnInit {
 
     this.clientForm = this.fb.group({
       userFirstName: ['', [Validators.required, Validators.minLength(2), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)]],
-      fecha:[new Date(), ],
+      fecha: [new Date(), [Validators.required, this.notFutureDateValidator]],
       producto:[this.productMap,Validators.required],
-      amount: ['', Validators.required, Validators.min(1)],
-      price: ['', Validators.required, Validators.min(1)],
+      amount: ['', [Validators.required, Validators.min(0.01)]],
+      price: ['', [Validators.required, Validators.min(0.01)]],
       ingreso: [''],
       flete: [''],
       desest: [''],
@@ -69,6 +72,19 @@ export class ClientModalComponent implements OnInit {
 
 
   }
+
+  private readonly notFutureDateValidator = (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) return null;
+
+    const selectedDate = new Date(control.value);
+    if (Number.isNaN(selectedDate.getTime())) return { invalidDate: true };
+
+    selectedDate.setHours(0, 0, 0, 0);
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    return selectedDate > currentDate ? { futureDate: true } : null;
+  };
 
   search(event: any) {
 
@@ -85,16 +101,21 @@ console.log(this.filteredProduct);
 
     this.clientService.getProductos().subscribe({
       next: (res) => {
-        this.productos=res.data;
-        console.log(this.productos);
-        (res.data || []).forEach((p: any) => {
+        const products = Array.isArray(res?.data) ? res.data : [];
+        this.productos = products;
+        products.forEach((p: any) => {
           this.productMap.set(Number(p.productoId), String(p.nombre));
         });
 
-this.isLoading=false
+        this.isLoading = false;
       },
-      error: () => {
-
+      error: (error) => {
+        this.isLoading = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error?.message || 'No se pudieron cargar los productos'
+        });
       }
     });
   }
@@ -232,7 +253,10 @@ this.isLoading=false
     const field = this.clientForm.get(fieldName);
     if (field && field.errors && (field.dirty || field.touched)) {
       if (field.errors['required']) return 'Este campo es requerido';
-      if (field.errors['minlength']) return `Ingresa un numero mayor a cero`;
+      if (field.errors['min']) return 'Debe ser mayor a cero';
+      if (field.errors['futureDate']) return 'La fecha no puede ser futura';
+      if (field.errors['invalidDate']) return 'Ingresa una fecha válida';
+      if (field.errors['minlength']) return `Ingresa al menos ${field.errors['minlength'].requiredLength} caracteres`;
       if (field.errors['pattern']) {
         if (fieldName === 'userFirstName' || fieldName === 'userLastName') {
           return 'Solo se permiten letras y espacios';

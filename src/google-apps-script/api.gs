@@ -110,6 +110,7 @@ function doPost(e) {
     // COMPRAS
     if (action === "createCompra") return json_({ ok: true, data: createCompra_(body) });
     if (action === "updateCompra") return json_({ ok: true, data: updateCompra_(body) });
+    if (action === "deleteCompra") return json_({ ok: true, data: deleteCompra_(body) });
 
     return json_({ ok: false, error: "Acción POST no soportada." });
   } catch (err) {

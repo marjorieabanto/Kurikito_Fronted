@@ -1,3 +1,6 @@
+.hb-brand {
+  cursor: pointer;
+}
 :host {
   display: block;
 }
@@ -16,6 +19,8 @@
 .header-content{
 /* display: grid; */
 /* grid-template-columns: 1fr 1fr 1fr; */
+
+pointer-events: visible;
 }
 
 .hb-brand{

@@ -269,3 +269,19 @@ function checkApiKey_(e) {
   if (!expected) throw new Error("API_KEY no está configurada en Script Properties.");
   if (!provided || provided !== expected) throw new Error("No autorizado: API KEY inválida.");
 }
+
+function deleteById_(sheetName, idField, idValue) {
+  const sheet = getSheet_(sheetName);
+  const { headers, rows, startRow } = readAll_(sheet);
+  const id = String(idValue || "").trim();
+  const idIdx = headers.indexOf(idField);
+
+  if (!id) throw new Error(`Para eliminar debes enviar '${idField}'.`);
+  if (idIdx === -1) throw new Error(`La hoja ${sheetName} debe tener la columna '${idField}'.`);
+
+  const rowPos = rows.findIndex(r => String(r[idIdx] || "").trim() === id);
+  if (rowPos === -1) throw new Error(`No se encontró ${idField}=${id} en ${sheetName}.`);
+
+  sheet.deleteRow(startRow + rowPos);
+  return { [idField]: id, deleted: true };
+}

@@ -3,5 +3,5 @@
 
 export const environment = {
   production: false,
-  apiUrl: '/api/macros/s/AKfycbzt9VNZ9VZm0dp-tCPWF2X6Nz1AoCtO3uwFc6XCpWfkuhV57D7JPCWk6le4qa6v0HxF/exec'
+  apiUrl: '/api/macros/s/AKfycbzpBBt0br-d9ViCTjAdtf0v-gOqrG4SUdLi0_vXYr2ltE2zcx0XzdW5F_EL2Jnj8d-w/exec'
 };

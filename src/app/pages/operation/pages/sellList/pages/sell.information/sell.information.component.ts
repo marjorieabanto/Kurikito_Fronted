@@ -12,10 +12,12 @@ import {InputTextModule} from "primeng/inputtext";
 import {TableModule} from "primeng/table";
 import {SuccessModalComponent} from "../../../../../../components/modals/success-modal/success-modal.component";
 import {ChartModule} from "primeng/chart";
+import {PaymentModalComponent} from "../../../../modals/payment-modal/payment-modal.component";
+import {ToastModule} from "primeng/toast";
 
 @Component({
   selector: 'app-sell.information',
-  imports: [ChartModule,ReactiveFormsModule, TableModule,CommonModule, FormsModule, SelectModule, InputTextModule],
+  imports: [ChartModule,ReactiveFormsModule, TableModule,CommonModule, FormsModule, SelectModule, InputTextModule, ToastModule],
   templateUrl: './sell.information.component.html',
   styleUrl: './sell.information.component.css',
   providers: [DialogService, MessageService]
@@ -221,6 +223,27 @@ export class SellInformationComponent implements OnInit{
 
   return() {
     this.router.navigate(["main/operation/list-sell"]);
+  }
+
+  addPayment(): void {
+    const ref = this.dialogService.open(PaymentModalComponent, {
+      data: { ventaId: this.idSellRoute },
+      header: 'Agregar abono',
+      width: '500px',
+      modal: true,
+      dismissableMask: true
+    });
+
+    ref.onClose.subscribe((result) => {
+      if (result?.success) {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Abono registrado correctamente'
+        });
+        this.loadSell();
+      }
+    });
   }
 
   originalVentaData: any = null;
