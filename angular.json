@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "pagaPe_Fronted": {
+    "Kurikito_Fronted": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/paga-pe-fronted",
+            "outputPath": "dist/kurikito-fronted",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -66,10 +66,10 @@
           },
           "configurations": {
             "production": {
-              "buildTarget": "pagaPe_Fronted:build:production"
+              "buildTarget": "Kurikito_Fronted:build:production"
             },
             "development": {
-              "buildTarget": "pagaPe_Fronted:build:development"
+              "buildTarget": "Kurikito_Fronted:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -77,7 +77,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "pagaPe_Fronted:build"
+            "buildTarget": "Kurikito_Fronted:build"
           }
         },
         "test": {

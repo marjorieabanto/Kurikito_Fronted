@@ -1,6 +1,6 @@
 [build]
 command = "npm run build"
-publish = "dist/paga-pe-fronted/browser"
+publish = "dist/kurikito-fronted/browser"
 functions = "netlify/functions"
 
 [[redirects]]

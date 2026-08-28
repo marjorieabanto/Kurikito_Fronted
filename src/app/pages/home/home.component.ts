@@ -8,10 +8,7 @@ import {ButtonModule} from "primeng/button";
 import {TableComponent} from "../../components/table/table.component";
 import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
 import {ActivatedRoute, Router} from "@angular/router";
-import {AuthService} from "../../services/auth.service";
-import {NewReminderComponent} from "./modals/new-reminder/new-reminder.component";
-import {ReminderService} from "../../services/client-managament/reminder.service";
-import {Reminder} from "../../models/reminder.model";
+
 
 @Component({
   selector: 'app-home',

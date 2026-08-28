@@ -12,7 +12,7 @@ import { InputNumberModule } from "primeng/inputnumber";
 import { InputTextModule } from "primeng/inputtext";
 import { ButtonModule } from "primeng/button";
 import { SelectModule } from "primeng/select";
-import { ClientService } from '../../../../services/client-managament/client.service';
+import { SellService } from '../../../../services/sell.service';
 import { CountryCodeService, Country } from '../../../../services/country-code.service';
 import {Client, ClientRequest} from '../../../../models/client.model';
 import { MessageService } from 'primeng/api';
@@ -47,7 +47,7 @@ export class ClientModalComponent implements OnInit {
   constructor(
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
-    private clientService: ClientService,
+    private clientService: SellService,
     private countryCodeService: CountryCodeService,
     private messageService: MessageService,
     private fb: FormBuilder

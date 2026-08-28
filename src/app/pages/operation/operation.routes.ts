@@ -14,32 +14,19 @@ export const OPERATION_ROUTES: Routes = [
       {
         path: 'list-sell',
         loadComponent: () =>
-          import('./list-clients/list-clients.component').then(
-            (c) => c.ListClientsComponent
+          import('./pages/sellList/sellList.component').then(
+            (c) => c.SellListComponent
           ),
       },
       {
         path: 'list-sell/:id',
         loadComponent: () =>
-          import('./list-clients/pages/sell.information/sell.information.component').then(
+          import('./pages/sellList/pages/sell.information/sell.information.component').then(
             (c) => c.SellInformationComponent
           ),
       },
 
-      {
-        path: 'list-client-services',
-        loadComponent: () =>
-          import('./list-client-services/list-client-services.component').then(
-            (c) => c.ListClientServicesComponent
-          ),
-      },
-      {
-        path: 'client-history/:id',
-        loadComponent: () =>
-          import('./client-history/client-history.component').then(
-            (c) => c.ClientHistoryComponent
-          ),
-      }
+      
     ]
   }
 ]

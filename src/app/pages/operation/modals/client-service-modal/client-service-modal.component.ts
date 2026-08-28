@@ -9,7 +9,7 @@ import {SelectModule} from "primeng/select";
 import {DatePickerModule} from "primeng/datepicker";
 import {MessageService} from "primeng/api";
 import {ServiceService} from "../../../../services/client-managament/service.service";
-import {ClientService} from "../../../../services/client-managament/client.service";
+import {ClientService} from "../../../../services/sell.service";
 import {ClientServiceService} from "../../../../services/client-managament/client-service.service";
 import {AutoCompleteModule} from "primeng/autocomplete";
 

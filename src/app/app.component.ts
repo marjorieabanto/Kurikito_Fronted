@@ -9,5 +9,5 @@ import { NotificationComponent } from './components/notification/notification.co
     styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'pagaPe_Fronted';
+  title = 'Kurikito_Fronted';
 }

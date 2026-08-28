@@ -2,13 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {NavigationEnd, Router, RouterOutlet} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {HeaderComponent} from "../layout/header/header.component";
-import {SidebarComponent} from "../layout/sidebar/sidebar.component";
 import {AuthService} from "../services/auth.service";
 import {UserService} from "../services/user/user.service";
 
 @Component({
     selector: 'app-pages',
-    imports: [RouterOutlet, CommonModule, HeaderComponent, SidebarComponent],
+    imports: [RouterOutlet, CommonModule, HeaderComponent],
     templateUrl: './pages.component.html',
     styleUrl: './pages.component.css'
 })
