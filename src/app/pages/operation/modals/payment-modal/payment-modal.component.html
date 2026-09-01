@@ -47,6 +47,27 @@
       }
     </div>
 
+    @if (showExcessAlert) {
+      <div class="uflex-v gap8" style="padding: 12px; border: 1px solid #f59e0b; border-radius: 8px; background: #fff7ed; color: #9a5b00;">
+        <strong>Pago por encima del saldo</strong>
+        <span>Este pago excede la deuda en {{ excedente | currency:'PEN':'symbol':'1.2-2':'es-PE' }}. El resto quedará como saldo a favor para el cliente.</span>
+      </div>
+    }
+
+    @if (showExcessAlert) {
+      <div class="uflex-v gap10 w100">
+        <label for="payment-account" class="fw-bold">Cuenta destino</label>
+        <p-select
+          inputId="payment-account"
+          formControlName="cuentaDestinoVentaId"
+          [options]="cuentaOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecciona la cuenta destino">
+        </p-select>
+      </div>
+    }
+
     <div class="uflex uflex-center gap20 w100">
       <button class="btn-primary uflex uflex-center" type="submit" [disabled]="isLoading">
         <i class="material-symbols-outlined">payments</i> Guardar

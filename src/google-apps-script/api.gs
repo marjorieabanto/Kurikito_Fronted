@@ -16,9 +16,23 @@ function doGet(e) {
         estado: p.estado || "",
         cliente: p.cliente || "",
         productoId: p.productoId || "",
+        sort: (p.sort || "desc").trim().toLowerCase(),
         limit: p.limit ? Number(p.limit) : 0
       };
       return json_({ ok: true, data: listVentas_(filters) });
+    }
+
+    if (action === "listVentasPorCliente") {
+      const cliente = (p.cliente || "").trim();
+      const estado = (p.estado || "").trim();
+      const sort = (p.sort || "desc").trim().toLowerCase();
+
+      if (!cliente) return json_({ ok: false, error: "Falta cliente" });
+
+      return json_({
+        ok: true,
+        data: listVentasPorClienteDetalle_(cliente, estado, sort)
+      });
     }
 
     if (action === "listVentasConProductos") {
@@ -57,6 +71,11 @@ if (action === "getVenta") {
   const ventaId = (p.ventaId || "").trim();
   if (!ventaId) return json_({ ok: false, error: "Falta ventaId" });
   return json_({ ok: true, data: getVenta_(ventaId) });
+}
+
+if (action === "applySaldoCuenta") {
+  const payload = parseBody_(e);
+  return json_({ ok: true, data: applySaldoCuenta_(payload) });
 }
 
 if (action === "listInventario") {

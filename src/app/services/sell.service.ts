@@ -21,7 +21,7 @@ export class SellService {
 
   getAllSells(): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any>(`${this.apiUrl}?action=listVentas`)
+    return this.http.get<any>(`${this.apiUrl}?action=listVentas&sort=asc`)
       .pipe(catchError(this.handleError));
   }
 
@@ -52,6 +52,20 @@ export class SellService {
   getSellById(id: string | null): Observable<any> {
 
     return this.http.get<any>(`${this.apiUrl}?action=getVenta&ventaId=${id}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  getVentasPorCliente(cliente: string, estado?: string): Observable<any> {
+    const params = new URLSearchParams({
+      action: 'listVentasPorCliente',
+      cliente,
+    });
+
+    if (estado) {
+      params.set('estado', estado);
+    }
+
+    return this.http.get<any>(`${this.apiUrl}?${params.toString()}`)
       .pipe(catchError(this.handleError));
   }
 
@@ -93,6 +107,14 @@ export class SellService {
 
   createPago(payload: any): Observable<any> {
     return this.http.post(`${this.apiUrl}?action=createPago`, payload, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    });
+  }
+
+  applySaldoCuenta(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}?action=applySaldoCuenta`, payload, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       })

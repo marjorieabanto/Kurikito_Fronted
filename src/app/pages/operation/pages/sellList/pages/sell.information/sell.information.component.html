@@ -29,20 +29,21 @@
 
       <div class="summary-item">
 
-        <div class="progress-header">
-          <span>Progreso de pago</span>
-          <strong>{{ porcentajePagado | number:'1.0-0' }}%</strong>
-        </div>
+  <div class="progress-header">
+    <span>Progreso de pago</span>
+    <strong>{{ porcentajePagado | number:'1.2-2' }}%</strong>
+  </div>
 
-        <div class="progress-bar">
-          <div
-            class="progress-value"
-            [style.width.%]="porcentajePagado"
-            [style.background]="progressColor">
-          </div>
-        </div>
+  <div class="progress-bar">
+    <div
+      class="progress-value"
+      [style.width.%]="porcentajePagado"
+      [style.background]="progressColor">
+    </div>
+  </div>
 
-      </div>
+</div>
+
 
       <div class="uflex-v gap20 payment-summary-section">
         <div class="uflex uflex-jbtw gap10">

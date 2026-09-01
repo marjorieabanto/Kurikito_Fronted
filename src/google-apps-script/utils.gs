@@ -56,15 +56,18 @@ function list_(sheetName, idField, filters, searchableFields) {
     });
   }
 
-  // Orden por fecha desc si existe
+  // Orden por fecha si existe
   if (items.length && ("fecha" in items[0])) {
+    const sortDir = String(filters.sort || "desc").trim().toLowerCase();
+    const multiplier = sortDir === "asc" ? 1 : -1;
+
     items.sort((a, b) => {
       const da = toDate_(a.fecha);
       const db = toDate_(b.fecha);
       if (!da && !db) return 0;
-      if (!da) return 1;
-      if (!db) return -1;
-      return db.getTime() - da.getTime();
+      if (!da) return 1 * multiplier;
+      if (!db) return -1 * multiplier;
+      return (da.getTime() - db.getTime()) * multiplier;
     });
   }
 

@@ -226,8 +226,14 @@ export class SellInformationComponent implements OnInit{
   }
 
   addPayment(): void {
+    const deudaActual = Number(this.paymentSummary?.saldo ?? 0);
     const ref = this.dialogService.open(PaymentModalComponent, {
-      data: { ventaId: this.idSellRoute },
+      data: {
+        ventaId: this.idSellRoute,
+        cliente: this.sell?.cliente || '',
+        deudaActual: Math.max(0, deudaActual),
+        //cuentaOptions: [{ label: 'Cuenta del cliente', value: '' }]
+      },
       header: 'Agregar abono',
       width: '500px',
       modal: true,
@@ -461,12 +467,11 @@ export class SellInformationComponent implements OnInit{
   }
 
   get porcentajePagado(): number {
-    const total = this.paymentSummary.totalAPagar;
-    const pagado = this.paymentSummary.totalPagado;
 
-    if (!total) return 0;
+    console.log('paymentSummary', this.paymentSummary.porcentajePagado);
+   
+   return  Number(this.paymentSummary?.porcentajePagado ?? 0);
 
-    return Math.min((pagado / total) * 100, 100);
   }
 
 

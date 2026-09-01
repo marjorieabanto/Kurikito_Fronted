@@ -1,5 +1,4 @@
 function listVentas_(filters) {
-  // Hoja VENTAS: ventaId, fecha, cliente, productoId, cantidad, precioVentaUnit, estado
   return list_(SHEET_VENTAS, "ventaId", filters, ["fecha", "cliente", "productoId", "estado"]);
 }
 
@@ -8,6 +7,29 @@ function listVentasConProductos_() {
     ventas: listVentas_({}),
     productos: listProductos_()
   };
+}
+
+function listVentasPorClienteDetalle_(cliente, estado, sort) {
+  const ventas = listVentas_({
+    cliente,
+    estado: estado || "",
+    sort: sort || "desc",
+    limit: 0
+  });
+
+  const productos = listProductos_();
+  const map = new Map((productos || []).map(p => [String(p.productoId), String(p.nombre || "") ]));
+
+  return (ventas || []).map(v => ({
+    ventaId: v.ventaId,
+    fecha: v.fecha,
+    cliente: v.cliente,
+    productoId: v.productoId,
+    productoName: map.get(String(v.productoId)) || "",
+    cantidad: v.cantidad,
+    precioVentaUnit: v.precioVentaUnit,
+    estado: v.estado
+  }));
 }
 
 function getVenta_(ventaId) {
@@ -33,15 +55,22 @@ function calcTotalesVenta_(venta, gastos, pagos) {
 
   const totalAPagar = totalBase - gastosCliente;
 
-  const totalPagado = sum_(pagos, p => num_(p.monto));
+  const pagosValidos = (pagos || []).filter(p => {
+    const tipo = String(p.tipoMovimiento || "").trim().toLowerCase();
+    return tipo !== "saldo_a_favor";
+  });
+
+  const totalPagado = sum_(pagosValidos, p => num_(p.monto));
   const saldo = totalAPagar - totalPagado;
+  const porcentajePagado = totalAPagar > 0 ? Math.min((totalPagado / totalAPagar) * 100, 100) : 0;
 
   return {
     totalBase,
     gastosCliente,
     totalAPagar,
     totalPagado,
-    saldo
+    saldo,
+    porcentajePagado
   };
 }
 

@@ -24,10 +24,18 @@ export class PaymentModalComponent {
     { label: 'Otro', value: 'OTRO' }
   ];
 
+  cuentaOptions: any[] =[];
+
+  //readonly cuentaOptions = this.config.data?.cuentaOptions ?? [{ label: 'Cuenta del cliente', value: '' }];
+  readonly deudaActual = Number(this.config.data?.deudaActual ?? 0);
+  excedente = 0;
+  showExcessAlert = false;
+
   readonly paymentForm = this.formBuilder.nonNullable.group({
     fecha: [new Date(), Validators.required],
     metodo: ['', Validators.required],
-    monto: [0, [Validators.required, Validators.min(0.01)]]
+    monto: [0, [Validators.required, Validators.min(0.01)]],
+    cuentaDestinoVentaId: ['']
   });
 
   constructor(
@@ -35,7 +43,39 @@ export class PaymentModalComponent {
     private readonly sellService: SellService,
     public readonly ref: DynamicDialogRef,
     public readonly config: DynamicDialogConfig
-  ) {}
+  ) {
+    this.paymentForm.controls.monto.valueChanges.subscribe((value) => {
+      const monto = Number(value ?? 0);
+      this.excedente = Math.max(0, monto - this.deudaActual);
+      this.showExcessAlert = this.excedente > 0;
+      if(this.showExcessAlert){
+        this.loadCuentasOpc();
+      }
+    });
+  }
+
+  loadCuentasOpc(){
+
+this.sellService.getVentasPorCliente(this.config.data.cliente).subscribe({
+next: (response) => {
+      
+        if (response?.ok === false) {
+          return;
+        }
+        this.cuentaOptions= response.data.filter((venta: any) => venta.ventaId !== this.config.data.ventaId).map((venta: any) => ({
+          label: venta.productoName+ ' - ' + venta.fecha,
+          value: venta.ventaId
+        }));
+        
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+
+
+})
+
+  }
 
   save(): void {
     if (this.paymentForm.invalid) {
@@ -52,10 +92,12 @@ export class PaymentModalComponent {
 
     this.isLoading = true;
     this.sellService.createPago({
+      cliente: String(this.config.data?.cliente || ''),
       ventaId,
       fecha: this.formatDate(value.fecha),
       metodo: value.metodo,
-      monto: Number(value.monto)
+      monto: Number(value.monto),
+      cuentaDestinoVentaId: value.cuentaDestinoVentaId || ''
     }).subscribe({
       next: (response) => {
         this.isLoading = false;
